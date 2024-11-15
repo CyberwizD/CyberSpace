@@ -1,49 +1,10 @@
 import flet as ft
-import time
 import sys
 import os
 from math import pi
 import asyncio
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-class SignInButton(ft.UserControl):
-    def __init__(self, btn_name):
-        self.btn_name = btn_name
-        super().__init__()
-
-    def on_sign_in_click(e):
-        # Navigate to dashboard page
-        ft.View(
-            "/login",
-            controls=[
-                page.go("/dashboard")
-            ]
-        )
-
-    def build(self):
-        return ft.Container(
-            content=ft.ElevatedButton(
-                on_click=self.on_sign_in_click,
-                content=ft.Text(
-                    self.btn_name,
-                    size=13,
-                    weight="bold",
-                ),
-                # Custom styling
-                style = ft.ButtonStyle(
-                    shape={
-                        "": ft.RoundedRectangleBorder(radius=8),
-                    },
-                    color={
-                        "": "black",
-                    },
-                    bgcolor={"": "#7df6dd"},
-                ),
-                height=42,
-                width=320
-            )
-        )
 
 class AnimatedBox(ft.UserControl):
     def __init__(self, border_color, bg_color, rotate_angle):
@@ -74,8 +35,11 @@ async def animate_boxes(page):
     anti_clockwise_rotation = -pi * 2
 
     # Animating the rotation of the boxes
-    red_box = page.controls[0].content.content.controls[1].controls[0].controls[0]
-    blue_box = page.controls[0].content.content.controls[1].controls[1].controls[0]
+    # red_box = page.controls[0].content.content.controls[1].controls[0].controls[0]
+    # blue_box = page.controls[0].content.content.controls[1].controls[1].controls[0]
+
+    red_box = page.views[-1].controls[0].content.controls[0].content.content.controls[1].controls[0]
+    blue_box = page.views[-1].controls[0].content.controls[0].content.content.controls[1].controls[1]
 
     # Implement a counter to reverse the rotation direction
     counter = 0
@@ -265,17 +229,21 @@ class UserInputField(ft.UserControl):
             ),
         )
 
+# Simulate the login page
 def main(page: ft.Page):
     page.horizontal_alignment = "center"
     page.vertical_alignment = "center"
     page.title = "Sign In"
     # page.bgcolor = "#F3F4F6"
 
-    page.add(
-        ft.Card(
-            width=1000,
-            height=600,
-            elevation=15,
+    def on_sign_in_click(e):
+        # Navigate to dashboard page
+        e.page.go("/dashboard")
+
+    login_content = ft.Card(
+            width=page.height,
+            height=page.height,
+            elevation=20,
             # color="#F3F4F6",
             content=ft.Container(
                 border_radius=6,
@@ -294,11 +262,11 @@ def main(page: ft.Page):
                             alignment=ft.MainAxisAlignment.CENTER,
                             spacing=5,
                             controls=[
-                                ft.Text("Sign In", size=22, weight="bold"),
+                                ft.Text("Sign In", size=22, weight=ft.FontWeight.BOLD),
                                 ft.Text(
                                     "Web Vulnerability Scanner",
                                     size=13,
-                                    weight="bold",
+                                    weight=ft.FontWeight.BOLD,
                                 ),
                             ],
                         ),
@@ -327,17 +295,49 @@ def main(page: ft.Page):
                             ],
                         ),
                         ft.Divider(height=45, color="transparent"),
-                        SignInButton("Sign In"),
+                        ft.Container(
+                            content=ft.ElevatedButton(
+                                on_click=lambda e: on_sign_in_click(e),
+                                content=ft.Text(
+                                    "Sign In",
+                                    size=13,
+                                    weight="bold",
+                                ),
+                                # Custom styling
+                                style=ft.ButtonStyle(
+                                    shape={
+                                        "": ft.RoundedRectangleBorder(radius=8),
+                                    },
+                                    color={
+                                        "": "black",
+                                    },
+                                    bgcolor={"": "#7df6dd"},
+                                ),
+                                height=42,
+                                width=320
+                            )
+                        ),
                         ft.Divider(height=45, color="transparent"),
                         ft.Text("CyberSpace @Copyright", size=10, color="white54")
                     ],
                 ),
             ),
         )
+
+    # page.add(login_content)
+    # asyncio.run(animate_boxes(page))
+
+    return ft.View(
+        "/login",
+        controls=[
+            ft.Card(
+                content=ft.Row(
+                    # horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    controls=[
+                        login_content,
+                    ],
+                ),
+            )
+        ]
     )
-
-    page.update()
-    asyncio.run(animate_boxes(page))
-
-if __name__ == '__main__':
-    ft.app(target=main)

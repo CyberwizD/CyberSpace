@@ -6,7 +6,7 @@ import scans
 import targets
 import integration
 import reports
-
+import scanning
 
 def main(page: ft.Page):
     # Store the current route in the page session
@@ -47,6 +47,10 @@ def main(page: ft.Page):
             # Show Reports page
             reports_page = reports.main(page)
             page.views.append(reports_page)
+        elif page.route == "/scanning":
+            # Show Scanning page
+            scanning_page = scanning.main(page)
+            page.views.append(scanning_page)
 
         page.update()
 

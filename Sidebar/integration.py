@@ -1,108 +1,133 @@
 import flet as ft
 
-class Sidebar(ft.UserControl):
-    def build(self):
-        return ft.Container(
-            width=250,
-            bgcolor="#1e1e2f",
-            padding=20,
-            border_radius=ft.border.only(right=ft.border.BorderSide(1, "white")),
-            content=ft.Column(
-                controls=[
-                    ft.Text("CyberSpace", size=30, weight="bold", color="white"),
-                    ft.Divider(height=20, color="transparent"),
-                    ft.ListTile(
-                        leading=ft.Icon(ft.icons.DASHBOARD, color="white"),
-                        title=ft.Text("Dashboard", color="white"),
-                    ),
-                    ft.ListTile(
-                        leading=ft.Icon(ft.icons.GPS_FIXED, color="white"),
-                        title=ft.Text("Targets", color="white"),
-                    ),
-                    ft.ListTile(
-                        leading=ft.Icon(ft.icons.SCANNER, color="white"),
-                        title=ft.Text("Scans", color="white"),
-                    ),
-                    ft.ListTile(
-                        leading=ft.Icon(ft.icons.INTEGRATION_INSTRUCTIONS, color="white"),
-                        title=ft.Text("Integrations", color="white"),
-                    ),
-                    ft.ListTile(
-                        leading=ft.Icon(ft.icons.REPORT, color="white"),
-                        title=ft.Text("Reports", color="white"),
-                    ),
-                ],
-            ),
-        )
+def main(page: ft.Page):
+    page.title = "Integrations"
 
-def IntegrationContent():
-    return ft.Container(
+    def on_dashboard_click(e):
+        e.page.go("/dashboard")
+
+    def on_start_scan_click(e):
+        e.page.go("/scans")
+
+    def on_manage_targets_click(e):
+        e.page.go("/targets")
+
+    def integration_click(e):
+        e.page.go("/integration")
+
+    def reports_click(e):
+        e.page.go("/reports")
+
+    sidebar_content = ft.Container(
+        width=250,
+        bgcolor="#1e1e2f",
+        padding=20,
+        border_radius=ft.border.only(right=ft.border.BorderSide(1, "white")),
+        content=ft.Column(
+            controls=[
+                ft.Text("CyberSpace", size=30, weight="bold", color="white"),
+                ft.Divider(height=20, color="transparent"),
+                ft.ListTile(
+                    leading=ft.Icon(ft.icons.DASHBOARD, color="white"),
+                    title=ft.Text("Dashboard", color="white"),
+                    on_click=lambda e: on_dashboard_click(e),
+                ),
+                ft.ListTile(
+                    leading=ft.Icon(ft.icons.GPS_FIXED, color="white"),
+                    title=ft.Text("Targets", color="white"),
+                    on_click=lambda e: on_manage_targets_click(e)
+                ),
+                ft.ListTile(
+                    leading=ft.Icon(ft.icons.SCANNER, color="white"),
+                    title=ft.Text("Scans", color="white"),
+                    on_click=lambda e: on_start_scan_click(e)
+                ),
+                ft.ListTile(
+                    leading=ft.Icon(ft.icons.INTEGRATION_INSTRUCTIONS, color="white"),
+                    title=ft.Text("Integrations", color="white"),
+                    on_click=lambda e: integration_click(e)
+                ),
+                ft.ListTile(
+                    leading=ft.Icon(ft.icons.REPORT, color="white"),
+                    title=ft.Text("Reports", color="white"),
+                    on_click=lambda e: reports_click(e)
+                ),
+            ],
+        ),
+    )
+
+    integration_content = ft.Container(
         padding=20,
         content=ft.Column(
             controls=[
                 ft.Text("Integrations", size=24, weight="bold"),
                 ft.Divider(height=10),
-                ft.Text("Unlock the full power of Astra with additional apps.", size=16),
+                ft.Text("Unlock the full power of CyberSpace with additional apps.", size=16),
+                ft.Divider(height=5),
                 ft.Row(
                     controls=[
-                        ft.ElevatedButton("Request Integration"),
-                        ft.ElevatedButton("Help"),
+                        ft.ElevatedButton("Request Integration", color="white"),
+                        ft.ElevatedButton("API Keys", color="white"),
                     ],
                 ),
-                ft.Divider(height=20),
-                ft.TextField(hint_text="Search by integration name..."),
-                ft.Divider(height=20),
+                ft.Divider(height=5),
+                # ft.Row(
+                #     controls=[
+                #     ft.ElevatedButton(
+                #         "Search",
+                #         style=ft.ButtonStyle(
+                #             shape={
+                #                 "": ft.RoundedRectangleBorder(radius=8),
+                #             },
+                #             color={
+                #                 "": "black",
+                #             },
+                #             bgcolor={"": "#7df6dd"},
+                #         ),
+                #     )
+                #     ]
+                # ),
+                # ft.Divider(height=5),
                 ft.Text("Connected Integrations", style="subtitle1"),
                 ft.ListTile(
-                    leading=ft.Icon(ft.icons.SETTINGS, color="blue"),
-                    title=ft.Text("Bitbucket"),
+                    leading=ft.Icon(ft.icons.API, color="blue"),
+                    title=ft.Text("Nessus"),
                     subtitle=ft.Text("Active", size=10),
                     trailing=ft.TextButton("Configure"),
                 ),
-                ft.Divider(height=20),
-                ft.Text("CI/CD Integrations", style="subtitle1"),
                 ft.ListTile(
-                    leading=ft.Icon(ft.icons.SCANNER, color="black"),
-                    title=ft.Text("GitHub"),
+                leading=ft.Icon(ft.icons.APPS, color="blue"),
+                    title=ft.Text("WPScan"),
+                    subtitle=ft.Text("Inactive", size=10),
+                    trailing=ft.TextButton("Configure"),
+                ),
+                ft.Divider(height=5),
+                ft.Text("CLI scan Integrations", style="subtitle1"),
+                ft.ListTile(
+                    leading=ft.Icon(ft.icons.SCANNER, color="#7df6dd"),
+                    title=ft.Text("Wapiti"),
                     trailing=ft.TextButton("Connect"),
                 ),
                 ft.ListTile(
-                    leading=ft.Icon(ft.icons.SCANNER_ROUNDED, color="black"),
-                    title=ft.Text("GitLab"),
+                    leading=ft.Icon(ft.icons.SCANNER_ROUNDED, color="#7df6dd"),
+                    title=ft.Text("SqlMap"),
                     trailing=ft.TextButton("Connect"),
                 ),
             ],
         ),
     )
 
-def main(page: ft.Page):
-    page.title = "Integrations"
-
-    sidebar = Sidebar()
-    integration_content = IntegrationContent()
-
-    page.add(
-        ft.Row(
-            controls=[
-                sidebar,
-                ft.VerticalDivider(width=1, color="white"),
-                integration_content,
-            ],
-        )
+    return ft.View(
+       "/integration",
+        controls=[
+            ft.Row(
+                controls=[
+                    sidebar_content,
+                    ft.VerticalDivider(width=1, color=ft.colors.TRANSPARENT),
+                    integration_content,
+                ],
+                alignment="start",
+                expand=True
+            )
+        ]
     )
-
-if __name__ == "__main__":
-    ft.app(target=main)
-
-
-
-
-# import flet as ft
-#
-# def main(page: ft.Page):
-#     return ft.View(
-#         "/integration",
-#         controls=[
-#             ft.Text("Integration Page", size=24, weight="bold"),
-#         ]
-#     )

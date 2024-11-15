@@ -1,42 +1,62 @@
 import flet as ft
 
-class Sidebar(ft.UserControl):
-    def build(self):
-        return ft.Container(
-            width=250,
-            bgcolor="#1e1e2f",
-            padding=20,
-            border_radius=ft.border.only(right=ft.border.BorderSide(1, "white")),
-            content=ft.Column(
-                controls=[
-                    ft.Text("CyberSpace", size=30, weight="bold", color="white"),
-                    ft.Divider(height=20, color="transparent"),
-                    ft.ListTile(
-                        leading=ft.Icon(ft.icons.DASHBOARD, color="white"),
-                        title=ft.Text("Dashboard", color="white"),
-                    ),
-                    ft.ListTile(
-                        leading=ft.Icon(ft.icons.GPS_FIXED, color="white"),
-                        title=ft.Text("Targets", color="white"),
-                    ),
-                    ft.ListTile(
-                        leading=ft.Icon(ft.icons.SCANNER, color="white"),
-                        title=ft.Text("Scans", color="white"),
-                    ),
-                    ft.ListTile(
-                        leading=ft.Icon(ft.icons.INTEGRATION_INSTRUCTIONS, color="white"),
-                        title=ft.Text("Integrations", color="white"),
-                    ),
-                    ft.ListTile(
-                        leading=ft.Icon(ft.icons.REPORT, color="white"),
-                        title=ft.Text("Reports", color="white"),
-                    ),
-                ],
-            ),
-        )
+def main(page: ft.Page):
+    page.title = "Reports"
 
-def ReportsContent():
-    return ft.Container(
+    def on_dashboard_click(e):
+        e.page.go("/dashboard")
+
+    def on_start_scan_click(e):
+        e.page.go("/scans")
+
+    def on_manage_targets_click(e):
+        e.page.go("/targets")
+
+    def integration_click(e):
+        e.page.go("/integration")
+
+    def reports_click(e):
+        e.page.go("/reports")
+
+    sidebar_content = ft.Container(
+        width=250,
+        bgcolor="#1e1e2f",
+        padding=20,
+        border_radius=ft.border.only(right=ft.border.BorderSide(1, "white")),
+        content=ft.Column(
+            controls=[
+                ft.Text("CyberSpace", size=30, weight="bold", color="white"),
+                ft.Divider(height=20, color="transparent"),
+                ft.ListTile(
+                    leading=ft.Icon(ft.icons.DASHBOARD, color="white"),
+                    title=ft.Text("Dashboard", color="white"),
+                    on_click=lambda e: on_dashboard_click(e),
+                ),
+                ft.ListTile(
+                    leading=ft.Icon(ft.icons.GPS_FIXED, color="white"),
+                    title=ft.Text("Targets", color="white"),
+                    on_click=lambda e: on_manage_targets_click(e)
+                ),
+                ft.ListTile(
+                    leading=ft.Icon(ft.icons.SCANNER, color="white"),
+                    title=ft.Text("Scans", color="white"),
+                    on_click=lambda e: on_start_scan_click(e)
+                ),
+                ft.ListTile(
+                    leading=ft.Icon(ft.icons.INTEGRATION_INSTRUCTIONS, color="white"),
+                    title=ft.Text("Integrations", color="white"),
+                    on_click=lambda e: integration_click(e)
+                ),
+                ft.ListTile(
+                    leading=ft.Icon(ft.icons.REPORT, color="white"),
+                    title=ft.Text("Reports", color="white"),
+                    on_click=lambda e: reports_click(e)
+                ),
+            ],
+        ),
+    )
+
+    reports_content = ft.Container(
         padding=20,
         content=ft.Column(
             controls=[
@@ -95,34 +115,17 @@ def ReportsContent():
         ),
     )
 
-def main(page: ft.Page):
-    page.title = "Reports"
-
-    sidebar = Sidebar()
-    reports_content = ReportsContent()
-
-    page.add(
-        ft.Row(
-            controls=[
-                sidebar,
-                ft.VerticalDivider(width=1, color="white"),
-                reports_content,
-            ],
-        )
+    return ft.View(
+       "/reports",
+        controls=[
+            ft.Row(
+                controls=[
+                    sidebar_content,
+                    ft.VerticalDivider(width=1, color=ft.colors.TRANSPARENT),
+                    reports_content,
+                ],
+                alignment="start",
+                expand=True
+            )
+        ]
     )
-
-if __name__ == "__main__":
-    ft.app(target=main)
-
-
-
-
-# import flet as ft
-#
-# def main(page: ft.Page):
-#     return ft.View(
-#         "/reports",
-#         controls=[
-#             ft.Text("Reports Page", size=24, weight="bold"),
-#         ]
-#     )

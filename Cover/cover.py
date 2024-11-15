@@ -10,7 +10,7 @@ def main(page: ft.Page):
 
     def on_get_started_click(e):
         # Show the sign-in form
-        pass
+        page.go("/login")
 
     left_container = ft.Container(
         width=page.width,
@@ -38,12 +38,17 @@ def main(page: ft.Page):
         )
     )
 
-    # Main layout with both containers (left and right)
-    main_layout = ft.Row(
-        controls=[left_container]
-    )
+    # return ft.View(
+    #     "/",
+    #     controls=[left_container]
+    # )
 
-    page.add(main_layout)
+    # Main layout with both containers (left and right)
+    # main_layout = ft.Column(
+    #     controls=[left_container]
+    # )
+
+    page.add(left_container)
     page.update()
 
 if __name__ == '__main__':
