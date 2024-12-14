@@ -6,13 +6,14 @@ import scans
 import targets
 import integration
 import reports
-import scanning
 
 def main(page: ft.Page):
     # Store the current route in the page session
     page.title = "CyberSpace"
     page.vertical_alignment = "center"
     page.horizontal_alignment = "center"
+    # page.window.title_bar_hidden = True
+    # page.window.title_bar_buttons_hidden = True
 
     # Define a function to handle routing
     def route_change(route):
@@ -47,10 +48,6 @@ def main(page: ft.Page):
             # Show Reports page
             reports_page = reports.main(page)
             page.views.append(reports_page)
-        elif page.route == "/scanning":
-            # Show Scanning page
-            scanning_page = scanning.main(page)
-            page.views.append(scanning_page)
 
         page.update()
 

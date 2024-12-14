@@ -18,6 +18,21 @@ def main(page: ft.Page):
     def reports_click(e):
         e.page.go("/reports")
 
+    def dark_mode(e):
+        if page.theme_mode == ft.ThemeMode.DARK:
+            page.theme_mode = ft.ThemeMode.LIGHT
+            dark_btn.icon = ft.icons.LIGHT_MODE  # Update the icon to indicate light mode
+        else:
+            page.theme_mode = ft.ThemeMode.DARK
+            dark_btn.icon = ft.icons.DARK_MODE  # Update the icon to indicate dark mode
+        page.update()
+
+    dark_btn = ft.IconButton(
+        icon=ft.icons.DARK_MODE,
+        icon_size=20,
+        on_click=dark_mode,
+    )
+
     sidebar_content = ft.Container(
         width=250,
         bgcolor="#1e1e2f",
@@ -123,6 +138,11 @@ def main(page: ft.Page):
                     sidebar_content,
                     ft.VerticalDivider(width=1, color=ft.colors.TRANSPARENT),
                     reports_content,
+                    ft.Container(
+                        content=dark_btn,
+                        alignment=ft.alignment.top_right,
+                        padding=ft.padding.only(left=0, top=20),
+                    ),
                 ],
                 alignment="start",
                 expand=True

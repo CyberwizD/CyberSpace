@@ -18,6 +18,21 @@ def main(page: ft.Page):
     def reports_click(e):
         e.page.go("/reports")
 
+    def dark_mode(e):
+        if page.theme_mode == ft.ThemeMode.DARK:
+            page.theme_mode = ft.ThemeMode.LIGHT
+            dark_btn.icon = ft.icons.LIGHT_MODE  # Update the icon to indicate light mode
+        else:
+            page.theme_mode = ft.ThemeMode.DARK
+            dark_btn.icon = ft.icons.DARK_MODE  # Update the icon to indicate dark mode
+        page.update()
+
+    dark_btn = ft.IconButton(
+        icon=ft.icons.DARK_MODE,
+        icon_size=20,
+        on_click=dark_mode,
+    )
+
     sidebar_content = ft.Container(
         width=250,
         bgcolor="#1e1e2f",
@@ -55,6 +70,29 @@ def main(page: ft.Page):
             ],
         ),
     )
+
+    target_views = ft.Container(
+        padding=ft.padding.only(top=10, bottom=10),
+        content=(
+            ft.Card(
+                content=ft.Container(
+                    padding=20,
+                    width=300,
+                    content=ft.Column(
+                        controls=[
+                            ft.Text("Targets Overview", size=18, weight="bold"),
+                            ft.Text("Details about your targets will be displayed here."),
+                        ]
+                    )
+                )
+            )
+        )
+    )
+    target_views.visible = False  # Initially set to invisible
+
+    def view_targets(e):
+        target_views.visible = not target_views.visible  # Toggle visibility
+        page.update()  # Update the page to reflect changes
 
     target_content = ft.Container(
         padding=20,
@@ -99,7 +137,15 @@ def main(page: ft.Page):
                                     ft.Row(
                                         controls=[
                                             ft.Text("Targets", size=18, weight="bold"),
-                                            ft.ElevatedButton("See All Targets"),
+                                            ft.ElevatedButton(
+                                                "See All Targets",
+                                                on_click=view_targets,
+                                                style=ft.ButtonStyle(
+                                                    shape={"": ft.RoundedRectangleBorder(radius=8)},
+                                                    color={"": "black"},
+                                                    bgcolor={"": "#7df6dd"},
+                                                )
+                                            ),
                                         ],
                                         alignment="spaceBetween"
                                     ),
@@ -139,6 +185,13 @@ def main(page: ft.Page):
                     sidebar_content,
                     ft.VerticalDivider(width=1, color=ft.colors.TRANSPARENT),
                     target_content,
+                    ft.VerticalDivider(width=1, color=ft.colors.TRANSPARENT),
+                    target_views,
+                    ft.Container(
+                        content=dark_btn,
+                        alignment=ft.alignment.top_right,
+                        padding=ft.padding.only(left=0, top=20),
+                    ),
                 ],
                 alignment="start",
                 expand=True

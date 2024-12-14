@@ -56,8 +56,9 @@ def main(page: ft.Page):
     )
 
     # Adding the main container to the page
-    page.add(cover_content)
     return ft.View(
         "/",
-        controls=[cover_content]
+        controls=[
+            cover_content
+        ]
     )
