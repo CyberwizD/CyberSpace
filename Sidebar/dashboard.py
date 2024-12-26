@@ -1,6 +1,18 @@
 import time
 import threading
 import flet as ft
+import subprocess
+import os
+import json
+from dotenv import load_dotenv
+load_dotenv()
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+class State:
+    toggle = True
+
+s = State()
 
 def main(page: ft.Page):
     page.title = "Dashboard"
@@ -102,6 +114,7 @@ def main(page: ft.Page):
                 height=300,
                 padding=10,
                 expand=True,
+                auto_scroll=True,
                 controls=[
                     ft.Card(
                         content=ft.Container(
@@ -283,7 +296,7 @@ def main(page: ft.Page):
                         width=590,
                         content=ft.Column(
                             controls=[
-                                ft.Text("Vulnerabilities (50)", weight="bold", size=16),
+                                ft.Text("Vulnerabilities (5)", weight="bold", size=16),
                                 vulnerabilities_content
                             ]
                         )
@@ -293,48 +306,279 @@ def main(page: ft.Page):
         ),
     )
 
+    data_1 = [
+        ft.LineChartData(
+            data_points=[
+                ft.LineChartDataPoint(1, 1),
+                ft.LineChartDataPoint(3, 1.5),
+                ft.LineChartDataPoint(5, 1.4),
+                ft.LineChartDataPoint(7, 3.4),
+                ft.LineChartDataPoint(10, 2),
+                ft.LineChartDataPoint(12, 2.2),
+                ft.LineChartDataPoint(13, 1.8),
+            ],
+            stroke_width=5,
+            color=ft.colors.LIGHT_GREEN,
+            curved=True,
+            stroke_cap_round=True,
+        ),
+        ft.LineChartData(
+            data_points=[
+                ft.LineChartDataPoint(1, 1),
+                ft.LineChartDataPoint(3, 2.8),
+                ft.LineChartDataPoint(7, 1.2),
+                ft.LineChartDataPoint(10, 2.8),
+                ft.LineChartDataPoint(12, 2.6),
+                ft.LineChartDataPoint(13, 3.9),
+            ],
+            color=ft.colors.PINK,
+            below_line_bgcolor=ft.colors.with_opacity(0, ft.colors.PINK),
+            stroke_width=5,
+            curved=True,
+            stroke_cap_round=True,
+        ),
+        ft.LineChartData(
+            data_points=[
+                ft.LineChartDataPoint(1, 2.8),
+                ft.LineChartDataPoint(3, 1.9),
+                ft.LineChartDataPoint(6, 3),
+                ft.LineChartDataPoint(10, 1.3),
+                ft.LineChartDataPoint(13, 2.5),
+            ],
+            color=ft.colors.CYAN,
+            stroke_width=5,
+            curved=True,
+            stroke_cap_round=True,
+        ),
+    ]
+
+    data_2 = [
+        ft.LineChartData(
+            data_points=[
+                ft.LineChartDataPoint(1, 1),
+                ft.LineChartDataPoint(3, 4),
+                ft.LineChartDataPoint(5, 1.8),
+                ft.LineChartDataPoint(7, 5),
+                ft.LineChartDataPoint(10, 2),
+                ft.LineChartDataPoint(12, 2.2),
+                ft.LineChartDataPoint(13, 1.8),
+            ],
+            stroke_width=4,
+            color=ft.colors.with_opacity(0.5, ft.colors.LIGHT_GREEN),
+            stroke_cap_round=True,
+        ),
+        ft.LineChartData(
+            data_points=[
+                ft.LineChartDataPoint(1, 1),
+                ft.LineChartDataPoint(3, 2.8),
+                ft.LineChartDataPoint(7, 1.2),
+                ft.LineChartDataPoint(10, 2.8),
+                ft.LineChartDataPoint(12, 2.6),
+                ft.LineChartDataPoint(13, 3.9),
+            ],
+            color=ft.colors.with_opacity(0.5, ft.colors.PINK),
+            below_line_bgcolor=ft.colors.with_opacity(0.2, ft.colors.PINK),
+            stroke_width=4,
+            curved=True,
+            stroke_cap_round=True,
+        ),
+        ft.LineChartData(
+            data_points=[
+                ft.LineChartDataPoint(1, 3.8),
+                ft.LineChartDataPoint(3, 1.9),
+                ft.LineChartDataPoint(6, 5),
+                ft.LineChartDataPoint(10, 3.3),
+                ft.LineChartDataPoint(13, 4.5),
+            ],
+            color=ft.colors.with_opacity(0.5, ft.colors.CYAN),
+            stroke_width=4,
+            stroke_cap_round=True,
+        ),
+    ]
+
+    chart = ft.LineChart(
+        data_series=data_1,
+        border=ft.Border(
+            bottom=ft.BorderSide(4, ft.colors.with_opacity(0.5, ft.colors.WHITE))
+        ),
+        left_axis=ft.ChartAxis(
+            labels=[
+                ft.ChartAxisLabel(
+                    value=1,
+                    label=ft.Text("1", size=10, weight=ft.FontWeight.BOLD, color="white"),
+                ),
+                ft.ChartAxisLabel(
+                    value=2,
+                    label=ft.Text("2", size=10, weight=ft.FontWeight.BOLD, color="white"),
+                ),
+                ft.ChartAxisLabel(
+                    value=3,
+                    label=ft.Text("3", size=10, weight=ft.FontWeight.BOLD, color="white"),
+                ),
+                ft.ChartAxisLabel(
+                    value=4,
+                    label=ft.Text("4", size=10, weight=ft.FontWeight.BOLD, color="white"),
+                ),
+                ft.ChartAxisLabel(
+                    value=5,
+                    label=ft.Text("5", size=10, weight=ft.FontWeight.BOLD, color="white"),
+                ),
+                ft.ChartAxisLabel(
+                    value=6,
+                    label=ft.Text("6", size=10, weight=ft.FontWeight.BOLD, color="white"),
+                ),
+            ],
+            labels_size=20,
+        ),
+        bottom_axis=ft.ChartAxis(
+            labels=[
+                ft.ChartAxisLabel(
+                    value=2,
+                    label=ft.Container(
+                        ft.Text(
+                            "NOV",
+                            size=10,
+                            weight=ft.FontWeight.BOLD,
+                            color=ft.colors.with_opacity(0.5, ft.colors.WHITE),
+                        ),
+                        margin=ft.margin.only(top=10),
+                    ),
+                ),
+                ft.ChartAxisLabel(
+                    value=7,
+                    label=ft.Container(
+                        ft.Text(
+                            "DEC",
+                            size=10,
+                            weight=ft.FontWeight.BOLD,
+                            color=ft.colors.with_opacity(0.5, ft.colors.WHITE),
+                        ),
+                        margin=ft.margin.only(top=10),
+                    ),
+                ),
+                ft.ChartAxisLabel(
+                    value=12,
+                    label=ft.Container(
+                        ft.Text(
+                            "JAN",
+                            size=10,
+                            weight=ft.FontWeight.BOLD,
+                            color=ft.colors.with_opacity(0.5, ft.colors.WHITE),
+                        ),
+                        margin=ft.margin.only(top=10),
+                    ),
+                ),
+            ],
+            labels_size=32,
+        ),
+        tooltip_bgcolor=ft.colors.with_opacity(0.8, ft.colors.BLUE_GREY),
+        min_y=0,
+        max_y=4,
+        min_x=0,
+        max_x=14,
+        # animate=5000,
+        expand=True,
+    )
+
+    def toggle_data(e):
+        if s.toggle:
+            chart.data_series = data_2
+            chart.data_series[2].point = True
+            chart.max_y = 6
+            chart.interactive = False
+        else:
+            chart.data_series = data_1
+            chart.max_y = 4
+            chart.interactive = True
+        s.toggle = not s.toggle
+        chart.update()
+
     progress_content = ft.Card(
         content=ft.Container(
             padding=20,
-            width=300,
+            bgcolor="#17171d",
+            border_radius=10,
+            width=300,  # Adjust width as necessary
             content=ft.Column(
                 controls=[
-                    ft.Text("Progress", weight="bold", size=20),
-                    ft.Divider(height=10),
-                    ft.Checkbox(label="Starting Scan", value=True),
-                    ft.Checkbox(label="Vulnerability Scan", value=True),
-                    ft.Checkbox(label="Connectivity Check", value=True),
-                    ft.Checkbox(label="Crawling", value=True),
-                    ft.Checkbox(label="Passive", value=True),
-                    ft.Checkbox(label="Active", value=True),
-                    ft.Checkbox(label="Emerging Threats", value=True),
-                    ft.Checkbox(label="Penetration Testing", value=True),
-                    ft.Checkbox(label="Bugs Verified", value=True),
-                    ft.Checkbox(label="Bugs Reported", value=True),
+                    ft.Row(
+                        controls=[
+                            ft.Text("Source", weight="bold", size=18, color="white"),
+                            ft.VerticalDivider(width=45),
+                            ft.Text("Pending Review", color=ft.colors.GREEN_500),
+                            ft.Icon(ft.icons.PENDING, color=ft.colors.GREEN_500),
+                        ],
+                        alignment=ft.MainAxisAlignment.START,
+                    ),
+                    ft.Text("Root Cause Analysis", size=14, color="white"),
+                    ft.Text("Reason for Nonconformance: Limited Scope! Fully utilize the functionality of CyberSpace.", size=14, color="white"),
+                    ft.Row(
+                        controls=[
+                            ft.ElevatedButton(
+                                "Move to Immediate Action",
+                                on_click=integration_click,
+                                style=ft.ButtonStyle(
+                                    shape={"": ft.RoundedRectangleBorder(radius=8)},
+                                    color={"": "black"},
+                                    bgcolor={"": "#7df6dd"},
+                                )
+                            ),
+                            button := ft.IconButton(ft.icons.REFRESH, on_click=toggle_data),
+                        ],
+                        alignment=ft.MainAxisAlignment.CENTER,
+                    ),
+                    ft.Divider(height=3, color="transparent"),
+                    # Additional Sections
+                    chart
                 ]
-            )
+            ),
         )
     )
 
     prompt_view = ft.ListView(
-        padding=10,
         expand=True,
         controls=[
             progress_content
         ]
     )
 
-    def prompt_answer(input):
-        prompt_view.controls.append(
-            ft.Text(f"CyberSpace AI: {"Here's your reply"}"),
+    genai_view = ft.ListView(
+        padding=10,
+        expand=True,
+        auto_scroll=True,
+        controls=[
+            # Gen AI output
+        ]
+    )
+
+    def prompt_answer(input_text):
+        prompt = f'{{"contents":[{{"parts":[{{"text": "{input_text}"}}]}}]}}'
+        response = subprocess.run(
+            ['curl',
+             f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}',
+             '-H', 'Content-Type: application/json', '-X', 'POST', '-d', prompt],
+            capture_output=True, text=True
         )
+
+        if response.returncode == 0:
+            try:
+                json_response = json.loads(response.stdout)
+                # Extracting the text from the correct path in the response
+                generated_text = json_response['candidates'][0]['content']['parts'][0]['text']
+                genai_view.controls.append(ft.Text(generated_text))
+                genai_view.visible = True
+            except (json.JSONDecodeError, IndexError, KeyError) as e:
+                prompt_view.controls.append(ft.Text(f"Error parsing response: {e}"))
+        else:
+            prompt_view.controls.append(ft.Text("Error retrieving response."))
+
         page.update()
-        prompt_view.visible = True
 
     def prompting(e=None):
         prompt_view.visible = False
         prompt_answer(input.value)
 
+    genai_view.visible = False
     ai_chat = ft.Card(
         content=ft.Container(
             padding=20,
@@ -346,7 +590,7 @@ def main(page: ft.Page):
                     ft.Divider(height=1, color=ft.colors.TRANSPARENT),
                     ft.Row(
                         controls=[
-                            input := ft.TextField(label="Ask CyberSpace AI anything...", width=260, height=42),
+                            input := ft.TextField(label="Ask CyberSpace AI anything...", width=260, height=43),
                             ft.IconButton(
                                 ft.icons.SEND,
                                 icon_size=20,
@@ -360,7 +604,8 @@ def main(page: ft.Page):
                         ]
                     ),
                     ft.Divider(height=1, color=ft.colors.TRANSPARENT),
-                    prompt_view
+                    prompt_view,
+                    genai_view
                 ]
             )
         )
@@ -386,37 +631,3 @@ def main(page: ft.Page):
             ),
         ]
     )
-
-'''
-
-# Check to validate whether the input is empty or integers
-        # if self.input.value != "" and self.input.value.isdigit():
-            # Changing the input value to float
-            # delta: float = float(self.input.value)
-            # Checks which button is clicked
-            # if event.control.data:
-            #     self.counter += delta
-            #     self.update_data_table(delta, sign=True)
-            #     self._in.chart.create_data_point(
-            #         x = self.x,
-            #         y = delta
-            #     )
-            #
-            #     self.x += 1
-            # else:
-            #     self.counter -= delta
-            #     self.update_data_table(delta, sign=False)
-            #     self._out.chart.create_data_point(
-            #         x=self.x,
-            #         y=delta
-            #     )
-            #
-            #     self.x += 1
-
-            # Updating the page
-            # self.balance.value = locale.currency(self.counter, grouping=True)
-            # self.balance.update()
-            # self.input.value = ""  # Clears input field
-            # self.input.update()
-
-'''

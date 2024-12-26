@@ -1,4 +1,18 @@
 import flet as ft
+import firebase_admin
+from firebase_admin import credentials, firestore
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+database = os.getenv("database")
+
+# Initialize Firebase Admin
+if not firebase_admin._apps:
+    cred = credentials.Certificate(fr"{database}")
+    firebase_admin.initialize_app(cred)
+
+db = firestore.client()
 
 def main(page: ft.Page):
     page.title = "Targets"
@@ -71,6 +85,80 @@ def main(page: ft.Page):
         ),
     )
 
+    def fetch_targets_from_firebase(url):
+        targets = []
+        try:
+            # Correctly using keyword arguments
+            targets_ref = db.collection("Cyber-Reports").where(field_path="url", op_string="==", value=url).stream()
+            for target in targets_ref:
+                target_data = target.to_dict()
+                targets.append(target_data)
+        except Exception as e:
+            print(f"Error fetching targets: {e}")
+        return targets
+
+    def view_targets(e):
+        url = target_input.value.strip()  # Get the URL from the input field
+        if url:
+            filtered_targets = fetch_targets_from_firebase(url)
+            if filtered_targets:
+                target_views.content = ft.Column(controls=[
+                    ft.Text("Filtered Targets:", size=18, weight="bold", color="white"),
+                    *[
+                        ft.ListTile(
+                            leading=ft.Icon(ft.icons.LINK, color="blue"),
+                            title=ft.Text(target['name']),  # Adjust based on your data structure
+                            subtitle=ft.Text(target['url']),
+                        )
+                        for target in filtered_targets
+                    ]
+                ])
+            else:
+                target_views.content = ft.Container(
+                    padding=ft.padding.only(top=10, bottom=10),
+                    content=(
+                        ft.Card(
+                            content=ft.Container(
+                                padding=20,
+                                width=300,
+                                border_radius=10,
+                                bgcolor="#17171d",
+                                content=ft.Column(
+                                    controls=[
+                                        ft.Text("Targets Overview", size=18, weight="bold", color="white"),
+                                        ft.Text("Details about your targets will be displayed here.", color="white"),
+                                        ft.Text("No targets found for the entered URL.", color="white")
+                                    ]
+                                )
+                            )
+                        )
+                    )
+                )
+        else:
+            target_views.content = ft.Container(
+                padding=ft.padding.only(top=10, bottom=10),
+                content=(
+                    ft.Card(
+                        content=ft.Container(
+                            padding=20,
+                            width=300,
+                            border_radius=10,
+                            bgcolor="#17171d",
+                            content=ft.Column(
+                                controls=[
+                                    ft.Text("Targets Overview", size=18, weight="bold", color="white"),
+                                    ft.Text("Details about your targets will be displayed here.", color="white"),
+                                    ft.Text("Please enter a URL to search.", color="white")
+                                ]
+                            )
+                        )
+                    )
+                )
+            )
+
+        target_views.visible = True  # Show the target views
+        page.update()  # Update the page to reflect changes
+
     target_views = ft.Container(
         padding=ft.padding.only(top=10, bottom=10),
         content=(
@@ -78,10 +166,12 @@ def main(page: ft.Page):
                 content=ft.Container(
                     padding=20,
                     width=300,
+                    border_radius=10,
+                    bgcolor="#17171d",
                     content=ft.Column(
                         controls=[
-                            ft.Text("Targets Overview", size=18, weight="bold"),
-                            ft.Text("Details about your targets will be displayed here."),
+                            ft.Text("Targets Overview", size=18, weight="bold", color="white"),
+                            ft.Text("Details about your targets will be displayed here.", color="white"),
                         ]
                     )
                 )
@@ -90,7 +180,7 @@ def main(page: ft.Page):
     )
     target_views.visible = False  # Initially set to invisible
 
-    def view_targets(e):
+    def view_targets_page(e):
         target_views.visible = not target_views.visible  # Toggle visibility
         page.update()  # Update the page to reflect changes
 
@@ -107,29 +197,31 @@ def main(page: ft.Page):
                             content=ft.Column(
                                 controls=[
                                     ft.Text("Workspaces", size=18, weight="bold"),
-                                    ft.TextField(hint_text="Search workspaces..."),
                                     ft.ListTile(
-                                        leading=ft.Icon(ft.icons.PERSON, color="black"),
+                                        leading=ft.Icon(ft.icons.PERSON, color="blue"),
                                         title=ft.Text("Personal Space"),
                                     ),
+                                    ft.TextField(hint_text="Search workspaces..."),
+
+                                    ft.Divider(height=10),
                                     ft.Text("Recent", style="subtitle1"),
                                     ft.ListTile(
-                                        leading=ft.Icon(ft.icons.WORK, color="black"),
-                                        title=ft.Text("InterSans Design"),
+                                        leading=ft.Icon(ft.icons.API_SHARP, color="green"),
+                                        title=ft.Text("API Tests"),
                                     ),
                                     ft.Text("Workspaces", style="subtitle1"),
                                     ft.ListTile(
-                                        leading=ft.Icon(ft.icons.WORK, color="black"),
+                                        leading=ft.Icon(ft.icons.ALL_OUT, color=ft.colors.ON_SURFACE),
                                         title=ft.Text("All Workspaces"),
                                     ),
                                     ft.ListTile(
-                                        leading=ft.Icon(ft.icons.WORK, color="black"),
-                                        title=ft.Text("Never Before Seen"),
+                                        leading=ft.Icon(ft.icons.BUSINESS, color=ft.colors.BLUE_ACCENT),
+                                        title=ft.Text("Company Workspace"),
                                     ),
                                 ],
                             ),
                         ),
-                        ft.VerticalDivider(width=1),
+                        ft.VerticalDivider(width=10),
                         ft.Container(
                             width=400,
                             content=ft.Column(
@@ -137,35 +229,39 @@ def main(page: ft.Page):
                                     ft.Row(
                                         controls=[
                                             ft.Text("Targets", size=18, weight="bold"),
+                                        ],
+                                        alignment="spaceBetween"
+                                    ),
+                                    ft.Row(
+                                        controls=[
+                                            target_input := ft.TextField(hint_text="Search by url, target name...", width=300),
                                             ft.ElevatedButton(
-                                                "See All Targets",
+                                                "Search",
                                                 on_click=view_targets,
                                                 style=ft.ButtonStyle(
                                                     shape={"": ft.RoundedRectangleBorder(radius=8)},
                                                     color={"": "black"},
                                                     bgcolor={"": "#7df6dd"},
                                                 )
-                                            ),
-                                        ],
-                                        alignment="spaceBetween"
+                                            )
+                                        ]
                                     ),
-                                    ft.TextField(hint_text="Search by email, target name..."),
                                     ft.Divider(height=10),
                                     ft.Text("Favorites", style="subtitle1"),
                                     ft.ListTile(
-                                        leading=ft.Icon(ft.icons.APPS, color="black"),
-                                        title=ft.Text("[Demo] Network Pentest"),
+                                        leading=ft.Icon(ft.icons.APPS, color="teal"),
+                                        title=ft.Text("Web Pentest"),
                                         subtitle=ft.Text("APIs - Delivery Completed", size=10),
                                     ),
                                     ft.Text("Pending Setup", style="subtitle1"),
                                     ft.ListTile(
-                                        leading=ft.Icon(ft.icons.PENDING, color="black"),
-                                        title=ft.Text("[No Name Target]"),
+                                        leading=ft.Icon(ft.icons.MOBILE_FRIENDLY, color=ft.colors.LIGHT_BLUE),
+                                        title=ft.Text("Mobile"),
                                         subtitle=ft.Text("iOS App - Pending", size=10),
                                     ),
                                     ft.ListTile(
-                                        leading=ft.Icon(ft.icons.PENDING, color="black"),
-                                        title=ft.Text("[No Name Target]"),
+                                        leading=ft.Icon(ft.icons.CLOUD, color="grey"),
+                                        title=ft.Text("Azure"),
                                         subtitle=ft.Text("Cloud Infra - Pending", size=10),
                                     ),
                                 ],
@@ -182,19 +278,24 @@ def main(page: ft.Page):
         controls=[
             ft.Row(
                 controls=[
-                    sidebar_content,
-                    ft.VerticalDivider(width=1, color=ft.colors.TRANSPARENT),
-                    target_content,
-                    ft.VerticalDivider(width=1, color=ft.colors.TRANSPARENT),
-                    target_views,
-                    ft.Container(
-                        content=dark_btn,
-                        alignment=ft.alignment.top_right,
-                        padding=ft.padding.only(left=0, top=20),
-                    ),
+                    ft.Row(
+                        controls=[
+                            sidebar_content,
+                            ft.VerticalDivider(width=1, color=ft.colors.TRANSPARENT),
+                            target_content,
+                            ft.VerticalDivider(width=1, color=ft.colors.TRANSPARENT),
+                            target_views,
+                            ft.Container(
+                                content=dark_btn,
+                                alignment=ft.alignment.top_right,
+                                padding=ft.padding.only(left=0, top=20),
+                            ),
+                        ],
+                    )
                 ],
                 alignment="start",
                 expand=True
             )
         ]
     )
+    

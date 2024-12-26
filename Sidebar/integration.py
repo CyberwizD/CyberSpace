@@ -14,8 +14,11 @@ WP_API_TOKEN = os.getenv("WP_API_TOKEN")
 OWASP_ZAP_API_KEY = os.getenv("OWASP_ZAP_API_KEY")
 database = os.getenv("database")
 
-cred = credentials.Certificate(fr"{database}")
-firebase_admin.initialize_app(cred)
+# Initialize Firebase Admin
+if not firebase_admin._apps:
+    cred = credentials.Certificate(fr"{database}")
+    firebase_admin.initialize_app(cred)
+
 db = firestore.client()
 
 # url = https://wpscan.com/api/v3/wordpresses/494
@@ -103,6 +106,7 @@ def main(page: ft.Page):
         height=400,
         padding=10,
         expand=True,
+        auto_scroll=True,
         controls=[
             # ft.Text(value="Scan results will be displayed here...", size=14, selectable=True),
             ft.Text("Connected Integrations", style="subtitle1"),
@@ -567,7 +571,7 @@ def main(page: ft.Page):
     )
 
     return ft.View(
-        "integration",
+        "/integration",
         controls=[
             ft.Row(
                 controls=[

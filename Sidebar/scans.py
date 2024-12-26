@@ -1,6 +1,7 @@
 import flet as ft
 import firebase_admin
 from firebase_admin import credentials, firestore
+import re
 import time
 import locale  # Used to format balance and numbers
 from datetime import date
@@ -16,15 +17,19 @@ OWASP_ZAP_API_KEY = os.getenv("OWASP_ZAP_API_KEY")
 database = os.getenv("database")
 
 locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
-cred = credentials.Certificate(fr"{database}")
-# firebase_admin.initialize_app(cred)
-# db = firestore.client()
 
-def save_scan_to_firebase(data):
-    # doc_ref = db.collection("Cyber-Reports").document()
-    # doc_ref.set(data)
-    # return doc_ref.id
-    ...
+# Initialize Firebase Admin
+if not firebase_admin._apps:
+    cred = credentials.Certificate(fr"{database}")
+    firebase_admin.initialize_app(cred)
+
+db = firestore.client()
+
+# Function to save a new folder to Firebase
+def save_folder_to_firebase(folder_name):
+    doc_ref = db.collection("Cyber-Folders").document()
+    doc_ref.set({"name": folder_name})
+    return doc_ref.id
 
 def main(page: ft.Page) -> None:
     page.title = "Scans"
@@ -43,85 +48,6 @@ def main(page: ft.Page) -> None:
 
     def reports_click(e):
         e.page.go("/reports")
-
-    normal_radius = 100
-    hover_radius = 110
-    normal_title_style = ft.TextStyle(
-        size=12, color=ft.colors.WHITE, weight=ft.FontWeight.BOLD
-    )
-    hover_title_style = ft.TextStyle(
-        size=16,
-        color=ft.colors.WHITE,
-        weight=ft.FontWeight.BOLD,
-        shadow=ft.BoxShadow(blur_radius=2, color=ft.colors.BLACK54),
-    )
-    normal_badge_size = 40
-    hover_badge_size = 50
-
-    def badge(icon, size):
-        return ft.Container(
-            ft.Icon(icon),
-            width=size,
-            height=size,
-            border=ft.border.all(1, ft.colors.BROWN),
-            border_radius=size / 2,
-            bgcolor=ft.colors.WHITE,
-        )
-
-    def on_chart_event(e: ft.PieChartEvent):
-        for idx, section in enumerate(chart.sections):
-            if idx == e.section_index:
-                section.radius = hover_radius
-                section.title_style = hover_title_style
-            else:
-                section.radius = normal_radius
-                section.title_style = normal_title_style
-        chart.update()
-
-    chart = ft.PieChart(
-        sections=[
-            ft.PieChartSection(
-                40,
-                title="40%",
-                title_style=normal_title_style,
-                color=ft.colors.BLUE,
-                radius=normal_radius,
-                badge=badge(ft.icons.AC_UNIT, normal_badge_size),
-                badge_position=0.98,
-            ),
-            ft.PieChartSection(
-                30,
-                title="30%",
-                title_style=normal_title_style,
-                color=ft.colors.YELLOW,
-                radius=normal_radius,
-                badge=badge(ft.icons.ACCESS_ALARM, normal_badge_size),
-                badge_position=0.98,
-            ),
-            ft.PieChartSection(
-                15,
-                title="15%",
-                title_style=normal_title_style,
-                color=ft.colors.PURPLE,
-                radius=normal_radius,
-                badge=badge(ft.icons.APPLE, normal_badge_size),
-                badge_position=0.98,
-            ),
-            ft.PieChartSection(
-                15,
-                title="15%",
-                title_style=normal_title_style,
-                color=ft.colors.GREEN,
-                radius=normal_radius,
-                badge=badge(ft.icons.PEDAL_BIKE, normal_badge_size),
-                badge_position=0.98,
-            ),
-        ],
-        sections_space=0,
-        center_space_radius=0,
-        on_chart_event=on_chart_event,
-        expand=True,
-    )
 
     base_chart_style: dict = {
         "expand": True,
@@ -234,7 +160,7 @@ def main(page: ft.Page) -> None:
                             ft.Text("Scanner:  Local Scanner", color="white"),
                             ft.Text(f"Start:  {date.today().strftime('%b-%d')} at {time.strftime('%H:%M %p', time.localtime())}", color="white"),
                             ft.Text(f"End:  {date.today().strftime('%b-%d')}", color="white"),
-                            ft.Text("Elapsed:  2 hours", color="white"),
+                            ft.Text("Elapsed:  2 mins", color="white"),
                             ft.Divider(height=20),
                         ]
                     ),
@@ -377,7 +303,7 @@ def main(page: ft.Page) -> None:
             while not self.stop_event.is_set():  # Check if the stop event is set
                 delta = random.randrange(0, 10)
                 self.counter += delta
-                time.sleep(0.5)
+                time.sleep(2)
                 self.update_data_table(delta, sign=True)
                 self._in.chart.create_data_point(
                     x=self.x,
@@ -449,8 +375,6 @@ def main(page: ft.Page) -> None:
 
     scan_content = ft.Column(
         controls=[
-            ft.Text("Major Identified Risks", size=18, weight="bold"),  # Title
-            ft.Divider(height=5, color="transparent"),  # Divider
             ft.Column(
                 controls=[
                     ft.Column(
@@ -558,13 +482,27 @@ def main(page: ft.Page) -> None:
         page.snack_bar.open = True
         page.update()
 
-        # Run the scan using sqlmap (or any other tool)
-        sqlmap_output = subprocess.run(f"sqlmap -u {tracker.input.value} --batch --random-agent", shell=True, capture_output=True, text=True)
+        def strip_ansi_codes(text):
+            ansi_escape = re.compile(r'(?:\x1B[@-_][0-?]*[ -/]*[@-~])')
+            return ansi_escape.sub("", text)
+
+        # Run the scan
+        rapidscan_path = r"C:\Users\WISDOM\Documents\rapidscan-master\rapidscan.py"
+        target_url = tracker.input.value
+
+        _output = subprocess.run(
+            f"py {rapidscan_path} http://hackthissite.com --skip nmap",
+            shell=True,
+            capture_output=True,
+            text=True,
+            encoding='utf-8'
+        )
+        clean_output = strip_ansi_codes(_output.stdout)
 
         # Clear previous results and update the scan_output_view with the actual results
         scan_output_view.controls.clear()  # Clear any previous output
         scan_output_view.controls.append(
-            ft.Text(value=sqlmap_output.stdout, size=14, selectable=True)  # Display new scan results
+            ft.Text(value=clean_output, size=15, selectable=True)
         )
         page.update()
 
@@ -632,6 +570,8 @@ def main(page: ft.Page) -> None:
                     ]
                 ),
                 ft.Divider(height=5),
+                ft.Text("Major Identified Risks", size=18, weight="bold"),  # Title
+                ft.Divider(height=5, color="transparent"),  # Divider
                 scan_output_view
             ],
         ),
@@ -640,7 +580,7 @@ def main(page: ft.Page) -> None:
     page.update()
 
     return ft.View(
-        "scans",
+        "/scans",
         controls=[
             ft.Row(
                 controls=[
