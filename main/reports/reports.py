@@ -16,11 +16,13 @@ if not firebase_admin._apps:
 
 db = firestore.client()
 
+
 # Function to save a new folder to Firebase
 def save_folder_to_firebase(folder_name):
     doc_ref = db.collection("Cyber-Folders").document()
     doc_ref.set({"name": folder_name})
     return doc_ref.id
+
 
 # Function to load folders from Firebase
 def load_folders():
@@ -35,6 +37,7 @@ def load_folders():
         print(f"Error loading folders: {e}")
     return folders
 
+
 # Function to load recent files from Firebase
 def load_recent_files():
     recent_files = []
@@ -47,6 +50,7 @@ def load_recent_files():
         print(f"Error loading recent files: {e}")
     return recent_files
 
+
 def load_data(callback):
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future_folders = executor.submit(load_folders)
@@ -55,6 +59,7 @@ def load_data(callback):
         folders_data = future_folders.result()
         recent_files_data = future_recent_files.result()
         callback(folders_data, recent_files_data)
+
 
 def main(page: ft.Page):
     page.title = "Reports"
@@ -140,7 +145,7 @@ def main(page: ft.Page):
         folder_details = db.collection("Cyber-Folders").document(folder_id).get().to_dict()
         if folder_details:
             dialog = ft.AlertDialog(
-                title=ft.Text(folder_details['name']),
+                title=ft.Text(folder_details.get('name', None)),
                 content=ft.Text("Folder content goes here."),
                 actions=[ft.ElevatedButton("Close", on_click=lambda e: close_dialog(dialog))]
             )
@@ -167,13 +172,13 @@ def main(page: ft.Page):
                                 controls=[
                                     ft.Column(
                                         controls=[
-                                            ft.Text(folder['name'], size=16, weight="bold", bgcolor="#17171d", color="white"),
+                                            ft.Text(folder.get('name', None), size=16, weight=ft.FontWeight.BOLD, bgcolor="#17171d", color="white"),
                                             ft.Text("Details: Click to View.", bgcolor="#17171d", color="white")
                                         ]
                                     ),
                                     ft.ElevatedButton(
                                         "Open",
-                                        on_click=lambda e, f=folder: display_folder_content(f['id']),
+                                        on_click=lambda e, f=folder: display_folder_content(f.get('id', None)),
                                         style=ft.ButtonStyle(
                                             shape={"": ft.RoundedRectangleBorder(radius=8)},
                                             color={"": "black"},
@@ -246,8 +251,8 @@ def main(page: ft.Page):
                     bgcolor="#17171d",
                     content=ft.Column(
                         controls=[
-                            ft.Text("Recent Files", size=18, weight="bold", color="white"),
-                            ft.Text("Folders", style="subtitle1", weight="bold", color="white"),
+                            ft.Text("Recent Files", size=18, weight=ft.FontWeight.BOLD, color="white"),
+                            ft.Text("Folders", style="subtitle1", weight=ft.FontWeight.BOLD, color="white"),
                             ft.Divider(height=5, color=ft.colors.TRANSPARENT),
                             folders_content,  # This will hold the folder controls
                         ]
@@ -325,7 +330,7 @@ def main(page: ft.Page):
             controls=[
                 ft.Row(
                     controls=[
-                        ft.Text("Documents", size=24, weight="bold"),
+                        ft.Text("Documents", size=24, weight=ft.FontWeight.BOLD),
                     ]
                 ),
                 ft.Divider(height=10),
@@ -429,7 +434,7 @@ def main(page: ft.Page):
                         padding=ft.padding.only(left=0, top=20),
                     ),
                 ],
-                alignment="start",
+                alignment=ft.MainAxisAlignment.START,
                 expand=True
             )
         ]

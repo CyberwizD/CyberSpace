@@ -1,17 +1,19 @@
 import flet as ft
-import cover
-import login
-import dashboard
-import scans
-import targets
-import integration
-import reports
+from cover import cover
+from login import login
+from dashboard import dashboard
+from targets import targets
+from scans import scans
+from integration import integration
+from reports import reports
+
 
 def main(page: ft.Page):
     # Store the current route in the page session
     page.title = "CyberSpace"
     page.vertical_alignment = "center"
     page.horizontal_alignment = "center"
+
     # page.window.title_bar_hidden = True
     # page.window.title_bar_buttons_hidden = True
 

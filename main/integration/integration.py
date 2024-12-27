@@ -24,11 +24,13 @@ db = firestore.client()
 # url = https://wpscan.com/api/v3/wordpresses/494
 # url = http://hackthissite.com
 
+
 # Function to save data to Firebase
 def save_to_firebase(data):
     doc_ref = db.collection("Cyber-Reports").document()
     doc_ref.set(data)
     return doc_ref.id
+
 
 def main(page: ft.Page):
     page.title = "Integrations"
@@ -70,7 +72,7 @@ def main(page: ft.Page):
         border_radius=ft.border.only(right=ft.border.BorderSide(1, "white")),
         content=ft.Column(
             controls=[
-                ft.Text("CyberSpace", size=30, weight="bold", color="white"),
+                ft.Text("CyberSpace", size=30, weight=ft.FontWeight.BOLD, color="white"),
                 ft.Divider(height=20, color="transparent"),
                 ft.ListTile(
                     leading=ft.Icon(ft.icons.DASHBOARD, color="white"),
@@ -111,12 +113,6 @@ def main(page: ft.Page):
             # ft.Text(value="Scan results will be displayed here...", size=14, selectable=True),
             ft.Text("Connected Integrations", style="subtitle1"),
             ft.ListTile(
-                leading=ft.Icon(ft.icons.API, color="blue"),
-                title=ft.Text("Nessus"),
-                subtitle=ft.Text("Active", size=10),
-                trailing=ft.TextButton("Configure"),
-            ),
-            ft.ListTile(
                 leading=ft.Icon(ft.icons.THUNDERSTORM, color="blue"),
                 title=ft.Text("OWASP ZAP"),
                 subtitle=ft.Text("Active", size=10),
@@ -125,7 +121,13 @@ def main(page: ft.Page):
             ft.ListTile(
                 leading=ft.Icon(ft.icons.APPS, color="blue"),
                 title=ft.Text("WPScan"),
-                subtitle=ft.Text("Inactive", size=10),
+                subtitle=ft.Text("Active", size=10),
+                trailing=ft.TextButton("Configure"),
+            ),
+            ft.ListTile(
+                leading=ft.Icon(ft.icons.API, color="blue"),
+                title=ft.Text("Nessus"),
+                subtitle=ft.Text("InActive", size=10),
                 trailing=ft.TextButton("Configure"),
             ),
             ft.Divider(height=10, color=ft.colors.TRANSPARENT),
@@ -222,10 +224,10 @@ def main(page: ft.Page):
 
         except json.JSONDecodeError as e:
             # Handle JSON parsing errors
-            #scan_output_view.controls.clear()
+            # scan_output_view.controls.clear()
             scan_output_view.visible = False
             scan_output_view.controls.append(
-                ft.Text(f"WPScan Error: {e}", size=14, selectable=True, weight="bold")
+                ft.Text(f"WPScan Error: {e}", size=14, selectable=True, weight=ft.FontWeight.BOLD)
             )
             page.update()
 
@@ -233,21 +235,22 @@ def main(page: ft.Page):
             page.update()
 
     async def display_alert_summary(target_url):
-        zap_alert_summary = f"http://localhost:8080/JSON/alert/view/alertsSummary/?apikey={OWASP_ZAP_API_KEY}&baseurl={target_url}"
+        zap_alert_summary = (f"http://localhost:8080/JSON/alert/view/alertsSummary/?apikey={OWASP_ZAP_API_KEY}"
+                             f"&baseurl={target_url}")
 
         # Clear previous results and add a loading indicator
-        #scan_output_view.controls.clear()
-        loading_text = ft.Text("Fetching alert summary...", size=16, weight="bold")
+        # scan_output_view.controls.clear()
+        loading_text = ft.Text("Fetching alert summary...", size=16, weight=ft.FontWeight.BOLD)
         scan_output_view.controls.append(loading_text)
 
-        # Center the loading indicator in a Snackbar
+        # Center the loading indicator in a SnackBar
         page.snack_bar = ft.SnackBar(
             ft.Column([
                 ft.Row([
                     ft.Text("Scanning... Please wait!", size=30, color="black"),
                     ft.ProgressRing(color="black")
-                ], alignment="center")
-            ], alignment="center"),
+                ], alignment=ft.MainAxisAlignment.CENTER)
+            ], alignment=ft.MainAxisAlignment.CENTER),
             bgcolor="#7df6dd"
         )
         page.snack_bar.open = True
@@ -293,9 +296,7 @@ def main(page: ft.Page):
                     rows=[
                         ft.DataRow(
                             cells=[
-                                ft.DataCell(ft.Text(row["Risk"],
-                                                    color="red" if row["Risk"] == "High" else "orange" if row[
-                                                                                                              "Risk"] == "Medium" else "green")),
+                                ft.DataCell(ft.Text(row["Risk"], color="red" if row["Risk"] == "High" else "orange" if row["Risk"] == "Medium" else "green")),
                                 ft.DataCell(ft.Text(row["Name"], color="blue")),
                                 ft.DataCell(ft.Text(row["Confidence"], color="black")),
                                 ft.DataCell(ft.Text(row["URL"], color="black")),
@@ -306,7 +307,7 @@ def main(page: ft.Page):
                 )
 
                 # Add the table to the ListView
-                scan_output_view.controls.append(ft.Text("Alert Summary", size=20, weight="bold", color="black"))
+                scan_output_view.controls.append(ft.Text("Alert Summary", size=20, weight=ft.FontWeight.BOLD, color="black"))
                 scan_output_view.controls.append(table)
 
                 # Add animation effect for a smooth display
@@ -352,7 +353,7 @@ def main(page: ft.Page):
             result = subprocess.run(['curl', zap_start_ajax_spider], shell=True, capture_output=True, text=True)
             zap_output = result.stdout
 
-            # Display the dialog that the spidering is done
+            # Display the dialog that the Crawling is done
             page.dialog = ft.AlertDialog(
                 modal=True,
                 title=ft.Text("Spider Crawling Completed"),
@@ -400,9 +401,9 @@ def main(page: ft.Page):
             page.dialog.open = False
             page.update()
 
-            #scan_output_view.controls.clear()
+            # scan_output_view.controls.clear()
             scan_output_view.controls.append(
-                ft.Text(f"Active Scan in progress... (Scan ID: {scan_id})", size=14, weight="bold")
+                ft.Text(f"Active Scan in progress... (Scan ID: {scan_id})", size=14, weight=ft.FontWeight.BOLD)
             )
             # scan_output_view.visible = False       ##########  Working on this  #########
             page.update()
@@ -440,9 +441,9 @@ def main(page: ft.Page):
             document_id = save_to_firebase({"Scan Result": json_data})
 
             # Display the final results on the GUI
-            #scan_output_view.controls.clear()
+            # scan_output_view.controls.clear()
             scan_output_view.controls.append(
-                ft.Text(f"Final Scan Report Saved (Document ID: {document_id})", size=14, weight="bold")
+                ft.Text(f"Final Scan Report Saved (Document ID: {document_id})", size=14, weight=ft.FontWeight.BOLD)
             )
 
             # Call the function to display the alert summary
@@ -486,7 +487,7 @@ def main(page: ft.Page):
         page.update()  # Update the page to reflect the changes
 
     def request_click(e):
-        # Create an alert dialog for integrations
+        # Create an alert dialog for integration
         url_input = ft.TextField(
             hint_text="Enter a web URL to scan",
         )
@@ -508,17 +509,17 @@ def main(page: ft.Page):
             actions=[
                 ft.TextButton(
                     "WPScan",
-                    #style=ft.ButtonStyle(color=ft.colors.WHITE),
+                    # style=ft.ButtonStyle(color=ft.colors.WHITE),
                     on_click=submit_input_wp_scan  # Trigger WPScan on button click
                 ),
                 ft.TextButton(
                     "OWASP ZAP",
-                    #style=ft.ButtonStyle(color=ft.colors.WHITE),
+                    # style=ft.ButtonStyle(color=ft.colors.WHITE),
                     on_click=submit_input_owasp_zap  # Trigger OWASP ZAP on button click
                 ),
                 ft.TextButton(
                     "Back",
-                    #style=ft.ButtonStyle(color=ft.colors.WHITE),
+                    # style=ft.ButtonStyle(color=ft.colors.WHITE),
                     on_click=close_dialog  # Close the dialog on "Back"
                 )
             ],
@@ -535,7 +536,7 @@ def main(page: ft.Page):
                     padding=20,
                     content=ft.Column(
                         controls=[
-                            ft.Text("Integrations", size=24, weight="bold"),
+                            ft.Text("Integrations", size=24, weight=ft.FontWeight.BOLD),
                             ft.Divider(height=10, color=ft.colors.TRANSPARENT),
                             ft.Text("Unlock the full power of CyberSpace with additional apps.", size=16),
                             ft.Divider(height=5, color=ft.colors.TRANSPARENT),
@@ -561,7 +562,7 @@ def main(page: ft.Page):
                                     ),
                                 ],
                             ),
-                            #ft.Divider(height=5),
+                            # ft.Divider(height=5),
                         ],
                     ),
                 ),

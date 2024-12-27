@@ -2,6 +2,7 @@ import flet as ft
 # from login import animate_boxes
 # import asyncio
 
+
 def main(page: ft.Page):
     page.horizontal_alignment = "center"
     page.vertical_alignment = "center"
@@ -33,7 +34,7 @@ def main(page: ft.Page):
                 alignment=ft.MainAxisAlignment.CENTER,  # Centers vertically
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centers horizontally
                 controls=[
-                    ft.Text("CyberSpace", size=50, weight="bold", color="white32", italic=True),
+                    ft.Text("CyberSpace", size=50, weight=ft.FontWeight.BOLD, color="white32", italic=True),
                     ft.Divider(height=20, color="transparent"),
                     ft.ElevatedButton(
                         "Get Started",

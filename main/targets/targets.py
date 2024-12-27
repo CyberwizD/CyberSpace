@@ -14,6 +14,7 @@ if not firebase_admin._apps:
 
 db = firestore.client()
 
+
 def main(page: ft.Page):
     page.title = "Targets"
 
@@ -54,7 +55,7 @@ def main(page: ft.Page):
         border_radius=ft.border.only(right=ft.border.BorderSide(1, "white")),
         content=ft.Column(
             controls=[
-                ft.Text("CyberSpace", size=30, weight="bold", color="white"),
+                ft.Text("CyberSpace", size=30, weight=ft.FontWeight.BOLD, color="white"),
                 ft.Divider(height=20, color="transparent"),
                 ft.ListTile(
                     leading=ft.Icon(ft.icons.DASHBOARD, color="white"),
@@ -103,7 +104,7 @@ def main(page: ft.Page):
             filtered_targets = fetch_targets_from_firebase(url)
             if filtered_targets:
                 target_views.content = ft.Column(controls=[
-                    ft.Text("Filtered Targets:", size=18, weight="bold", color="white"),
+                    ft.Text("Filtered Targets:", size=18, weight=ft.FontWeight.BOLD, color="white"),
                     *[
                         ft.ListTile(
                             leading=ft.Icon(ft.icons.LINK, color="blue"),
@@ -125,7 +126,7 @@ def main(page: ft.Page):
                                 bgcolor="#17171d",
                                 content=ft.Column(
                                     controls=[
-                                        ft.Text("Targets Overview", size=18, weight="bold", color="white"),
+                                        ft.Text("Targets Overview", size=18, weight=ft.FontWeight.BOLD, color="white"),
                                         ft.Text("Details about your targets will be displayed here.", color="white"),
                                         ft.Text("No targets found for the entered URL.", color="white")
                                     ]
@@ -146,7 +147,7 @@ def main(page: ft.Page):
                             bgcolor="#17171d",
                             content=ft.Column(
                                 controls=[
-                                    ft.Text("Targets Overview", size=18, weight="bold", color="white"),
+                                    ft.Text("Targets Overview", size=18, weight=ft.FontWeight.BOLD, color="white"),
                                     ft.Text("Details about your targets will be displayed here.", color="white"),
                                     ft.Text("Please enter a URL to search.", color="white")
                                 ]
@@ -170,7 +171,7 @@ def main(page: ft.Page):
                     bgcolor="#17171d",
                     content=ft.Column(
                         controls=[
-                            ft.Text("Targets Overview", size=18, weight="bold", color="white"),
+                            ft.Text("Targets Overview", size=18, weight=ft.FontWeight.BOLD, color="white"),
                             ft.Text("Details about your targets will be displayed here.", color="white"),
                         ]
                     )
@@ -188,7 +189,7 @@ def main(page: ft.Page):
         padding=20,
         content=ft.Column(
             controls=[
-                ft.Text("Workspaces and Targets", size=24, weight="bold"),
+                ft.Text("Workspaces and Targets", size=24, weight=ft.FontWeight.BOLD),
                 ft.Divider(height=10),
                 ft.Row(
                     controls=[
@@ -196,7 +197,7 @@ def main(page: ft.Page):
                             width=200,
                             content=ft.Column(
                                 controls=[
-                                    ft.Text("Workspaces", size=18, weight="bold"),
+                                    ft.Text("Workspaces", size=18, weight=ft.FontWeight.BOLD),
                                     ft.ListTile(
                                         leading=ft.Icon(ft.icons.PERSON, color="blue"),
                                         title=ft.Text("Personal Space"),
@@ -228,9 +229,9 @@ def main(page: ft.Page):
                                 controls=[
                                     ft.Row(
                                         controls=[
-                                            ft.Text("Targets", size=18, weight="bold"),
+                                            ft.Text("Targets", size=18, weight=ft.FontWeight.BOLD),
                                         ],
-                                        alignment="spaceBetween"
+                                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN
                                     ),
                                     ft.Row(
                                         controls=[
@@ -293,7 +294,7 @@ def main(page: ft.Page):
                         ],
                     )
                 ],
-                alignment="start",
+                alignment=ft.MainAxisAlignment.START,
                 expand=True
             )
         ]

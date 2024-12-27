@@ -6,6 +6,7 @@ import asyncio
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+
 class AnimatedBox(ft.UserControl):
     def __init__(self, border_color, bg_color, rotate_angle):
         # Create instances for each parameter
@@ -28,6 +29,7 @@ class AnimatedBox(ft.UserControl):
             animate_rotation=ft.animation.Animation(700, "easeInOut"),  # Enable animation
         )
 
+
 async def animate_boxes(page):
     # Create several variables for one box to go clockwise,
     # and the other anti-clockwise
@@ -45,7 +47,7 @@ async def animate_boxes(page):
     counter = 0
     while True:
         # rotate 4x before switching directions
-        if counter >= 0 and counter <= 4:
+        if 0 <= counter <= 4:
             red_box.rotate = ft.transform.Rotate(
                 anti_clockwise_rotation, ft.alignment.center
             )
@@ -64,7 +66,7 @@ async def animate_boxes(page):
             await asyncio.sleep(0.7)  # Non-blocking sleep
 
         # Reversing the boxes
-        if counter >= 5 and counter <= 10:
+        if 5 <= counter <= 10:
             # Make sure to reverse the rotation angles
             clockwise_rotation -= pi / 2
             anti_clockwise_rotation += pi / 2
@@ -86,6 +88,7 @@ async def animate_boxes(page):
         # Finally, reset the counter to 0 at 10
         if counter > 10:
             counter = 0
+
 
 class UserInputField(ft.UserControl):
     def __init__(self, icon_name, text_hint, hide, function_emails: bool, function_check: bool):
@@ -124,7 +127,7 @@ class UserInputField(ft.UserControl):
                     content=ft.Text(
                         label_title[index],
                         size=9,
-                        weight="bold",
+                        weight=ft.FontWeight.BOLD,
                     ),
                 )
             )
@@ -229,6 +232,7 @@ class UserInputField(ft.UserControl):
             ),
         )
 
+
 # Simulate the login page
 def main(page: ft.Page):
     page.horizontal_alignment = "center"
@@ -301,7 +305,7 @@ def main(page: ft.Page):
                                 content=ft.Text(
                                     "Sign In",
                                     size=13,
-                                    weight="bold",
+                                    weight=ft.FontWeight.BOLD,
                                 ),
                                 # Custom styling
                                 style=ft.ButtonStyle(

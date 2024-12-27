@@ -9,10 +9,13 @@ load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
+
 class State:
     toggle = True
 
+
 s = State()
+
 
 def main(page: ft.Page):
     page.title = "Dashboard"
@@ -77,7 +80,7 @@ def main(page: ft.Page):
         border_radius=ft.border.only(right=ft.border.BorderSide(1, "white")),
         content=ft.Column(
             controls=[
-                ft.Text("CyberSpace", size=30, weight="bold", color="white"),
+                ft.Text("CyberSpace", size=30, weight=ft.FontWeight.BOLD, color="white"),
                 ft.Divider(height=20, color="transparent"),
                 ft.ListTile(
                     leading=ft.Icon(ft.icons.DASHBOARD, color="white"),
@@ -121,7 +124,7 @@ def main(page: ft.Page):
                             padding=10,
                             content=ft.Column(
                                 controls=[
-                                    ft.Text("#8793 - Server Side Template Injection", weight="bold"),
+                                    ft.Text("#8793 - Server Side Template Injection", weight=ft.FontWeight.BOLD),
                                     ft.Text("22 Jan, 12:11 PM"),
                                     ft.Row(
                                         controls=[
@@ -139,7 +142,7 @@ def main(page: ft.Page):
                             padding=10,
                             content=ft.Column(
                                 controls=[
-                                    ft.Text("#8793 - PII Disclosure", weight="bold"),
+                                    ft.Text("#8793 - PII Disclosure", weight=ft.FontWeight.BOLD),
                                     ft.Text("16 Jan, 4:18 PM"),
                                     ft.Row(
                                         controls=[
@@ -157,7 +160,7 @@ def main(page: ft.Page):
                             padding=10,
                             content=ft.Column(
                                 controls=[
-                                    ft.Text("#8793 - .svn/entries Found", weight="bold"),
+                                    ft.Text("#8793 - .svn/entries Found", weight=ft.FontWeight.BOLD),
                                     ft.Text("21 Jun, 4:48 PM"),
                                     ft.Row(
                                         controls=[
@@ -175,7 +178,7 @@ def main(page: ft.Page):
                             padding=10,
                             content=ft.Column(
                                 controls=[
-                                    ft.Text("#8793 - JSON Web Key Set Disclosed", weight="bold"),
+                                    ft.Text("#8793 - JSON Web Key Set Disclosed", weight=ft.FontWeight.BOLD),
                                     ft.Text("6 Feb, 9:18 AM"),
                                     ft.Row(
                                         controls=[
@@ -193,7 +196,7 @@ def main(page: ft.Page):
                             padding=10,
                             content=ft.Column(
                                 controls=[
-                                    ft.Text("#8793 - WordPress Database Backup File Found", weight="bold"),
+                                    ft.Text("#8793 - WordPress Database Backup File Found", weight=ft.FontWeight.BOLD),
                                     ft.Text("6 Feb, 9:20 AM"),
                                     ft.Row(
                                         controls=[
@@ -212,15 +215,15 @@ def main(page: ft.Page):
         alignment=ft.MainAxisAlignment.SPACE_EVENLY,  # Adjust spacing as needed
     )
 
-    total_scans_text = ft.Text("0", size=20, weight="bold")
-    high_severity_text = ft.Text("0", size=20, weight="bold")
-    potential_loss_text = ft.Text("$0", size=20, weight="bold")
+    total_scans_text = ft.Text("0", size=20, weight=ft.FontWeight.BOLD)
+    high_severity_text = ft.Text("0", size=20, weight=ft.FontWeight.BOLD)
+    potential_loss_text = ft.Text("$0", size=20, weight=ft.FontWeight.BOLD)
 
     dashboard_content = ft.Container(
         padding=20,
         content=ft.Column(
             controls=[
-                ft.Text("Dashboard Overview", size=24, weight="bold"),
+                ft.Text("Dashboard Overview", size=24, weight=ft.FontWeight.BOLD),
                 ft.Divider(height=10),
                 ft.Text("Welcome to an overview of your dashboard.", size=16),
                 ft.Divider(height=5, color=ft.colors.TRANSPARENT),
@@ -248,7 +251,7 @@ def main(page: ft.Page):
                     ]
                 ),
                 ft.Divider(height=10),
-                ft.Text("Quick Stats", size=18, weight="bold"),
+                ft.Text("Quick Stats", size=18, weight=ft.FontWeight.BOLD),
                 ft.Row(
                     controls=[
                         ft.Card(
@@ -296,7 +299,7 @@ def main(page: ft.Page):
                         width=590,
                         content=ft.Column(
                             controls=[
-                                ft.Text("Vulnerabilities (5)", weight="bold", size=16),
+                                ft.Text("Vulnerabilities (5)", weight=ft.FontWeight.BOLD, size=16),
                                 vulnerabilities_content
                             ]
                         )
@@ -503,7 +506,7 @@ def main(page: ft.Page):
                 controls=[
                     ft.Row(
                         controls=[
-                            ft.Text("Source", weight="bold", size=18, color="white"),
+                            ft.Text("Source", weight=ft.FontWeight.BOLD, size=18, color="white"),
                             ft.VerticalDivider(width=45),
                             ft.Text("Pending Review", color=ft.colors.GREEN_500),
                             ft.Icon(ft.icons.PENDING, color=ft.colors.GREEN_500),
@@ -511,7 +514,7 @@ def main(page: ft.Page):
                         alignment=ft.MainAxisAlignment.START,
                     ),
                     ft.Text("Root Cause Analysis", size=14, color="white"),
-                    ft.Text("Reason for Nonconformance: Limited Scope! Fully utilize the functionality of CyberSpace.", size=14, color="white"),
+                    ft.Text("Reason for Non-conformance: Limited Scope! Fully utilize the functionality of CyberSpace.", size=14, color="white"),
                     ft.Row(
                         controls=[
                             ft.ElevatedButton(
@@ -586,7 +589,7 @@ def main(page: ft.Page):
             width=350,
             content=ft.Column(
                 controls=[
-                    ft.Text("Chat with CyberSpace AI", weight="bold", size=20),
+                    ft.Text("Chat with CyberSpace AI", weight=ft.FontWeight.BOLD, size=20),
                     ft.Divider(height=1, color=ft.colors.TRANSPARENT),
                     ft.Row(
                         controls=[

@@ -25,11 +25,13 @@ if not firebase_admin._apps:
 
 db = firestore.client()
 
+
 # Function to save a new folder to Firebase
 def save_folder_to_firebase(folder_name):
     doc_ref = db.collection("Cyber-Folders").document()
     doc_ref.set({"name": folder_name})
     return doc_ref.id
+
 
 def main(page: ft.Page) -> None:
     page.title = "Scans"
@@ -107,7 +109,7 @@ def main(page: ft.Page) -> None:
 
     in_style: dict = {
         "expand": True,
-        #"bgcolor": "#17171d",
+        # "bgcolor": "#17171d",
         "border_radius": 10,
         "padding": 30,
     }
@@ -131,7 +133,7 @@ def main(page: ft.Page) -> None:
             self.content = ft.Container(
                 ft.Column(
                     controls=[
-                        ft.Text("Last Scan", size=18, weight="bold", color="white"),
+                        ft.Text("Last Scan", size=18, weight=ft.FontWeight.BOLD, color="white"),
                         ft.Text("Policy:  API Security Tests", color="white"),
                         ft.Text("Status:  Completed", color="white"),
                         ft.Text("Security Base:  CVSS v1.0", color="white"),
@@ -151,7 +153,7 @@ def main(page: ft.Page) -> None:
         def create_scan_details(self) -> ft.Column:
             return ft.Column(
                 controls=[
-                    ft.Text("Scan Details", size=18, weight="bold", color="white"),
+                    ft.Text("Scan Details", size=18, weight=ft.FontWeight.BOLD, color="white"),
                     ft.Column(
                         controls=[
                             ft.Text("Policy:  Web Application Tests", color="white"),
@@ -202,8 +204,8 @@ def main(page: ft.Page) -> None:
         },
         "data_table": {
             "columns": [
-                ft.DataColumn(ft.Text("Timestamp", weight="w900")),
-                ft.DataColumn(ft.Text("Amount", weight="w900"), numeric=True),
+                ft.DataColumn(ft.Text("Timestamp", weight=ft.FontWeight.W_900)),
+                ft.DataColumn(ft.Text("Amount", weight=ft.FontWeight.W_900), numeric=True),
             ],
             "width": 380,
             "heading_row_height": 35,
@@ -251,14 +253,14 @@ def main(page: ft.Page) -> None:
             self.table = ft.DataTable(**tracker_style.get("data_table"))
 
             self.content = ft.Column(
-                horizontal_alignment="center",
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 controls=[
                     ft.Divider(height=15, color="transparent"),
-                    ft.Text("Balance", size=11, weight="w900"),
-                    ft.Row(alignment="center", controls=[self.balance]),
+                    ft.Text("Balance", size=11, weight=ft.FontWeight.W_900),
+                    ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.balance]),
                     ft.Divider(height=15, color="transparent"),
                     ft.Row(
-                        alignment="center",
+                        alignment=ft.MainAxisAlignment.CENTER,
                         controls=[
                             self.subtract,
                             self.input,
@@ -342,7 +344,7 @@ def main(page: ft.Page) -> None:
         border_radius=ft.border.only(right=ft.border.BorderSide(1, "white")),
         content=ft.Column(
             controls=[
-                ft.Text("CyberSpace", size=30, weight="bold", color="white"),
+                ft.Text("CyberSpace", size=30, weight=ft.FontWeight.BOLD, color="white"),
                 ft.Divider(height=20, color="transparent"),
                 ft.ListTile(
                     leading=ft.Icon(ft.icons.DASHBOARD, color="white"),
@@ -445,7 +447,7 @@ def main(page: ft.Page) -> None:
             padding=10,
             content=ft.Column(
                 controls=[
-                    ft.Text("Scanning Target", size=24, weight="bold", color="white"),  # Increased font size and weight
+                    ft.Text("Scanning Target", size=24, weight=ft.FontWeight.BOLD, color="white"),  # Increased font size and weight
                     ft.Divider(height=10, color="white"),  # Divider for separation
                     ft.Row(
                         controls=[
@@ -475,15 +477,15 @@ def main(page: ft.Page) -> None:
                 ft.Row([
                     ft.Text("Scanning... Please wait!", size=30, color="black"),
                     ft.ProgressRing(color="black")
-                ], alignment="center")
-            ], alignment="center"),
+                ], alignment=ft.MainAxisAlignment.CENTER)
+            ], alignment=ft.MainAxisAlignment.CENTER),
             bgcolor="#7df6dd"
         )
         page.snack_bar.open = True
         page.update()
 
         def strip_ansi_codes(text):
-            ansi_escape = re.compile(r'(?:\x1B[@-_][0-?]*[ -/]*[@-~])')
+            ansi_escape = re.compile(r'\x1B[@-_][0-?]*[ -/]*[@-~]')
             return ansi_escape.sub("", text)
 
         # Run the scan
@@ -539,7 +541,7 @@ def main(page: ft.Page) -> None:
         padding=20,
         content=ft.Column(
             controls=[
-                ft.Text("Automated App Scan (Full)", size=24, weight="bold"),
+                ft.Text("Automated App Scan (Full)", size=24, weight=ft.FontWeight.BOLD),
                 ft.Divider(height=10),
                 ft.Column(
                     controls=[
@@ -570,7 +572,7 @@ def main(page: ft.Page) -> None:
                     ]
                 ),
                 ft.Divider(height=5),
-                ft.Text("Major Identified Risks", size=18, weight="bold"),  # Title
+                ft.Text("Major Identified Risks", size=18, weight=ft.FontWeight.BOLD),  # Title
                 ft.Divider(height=5, color="transparent"),  # Divider
                 scan_output_view
             ],
