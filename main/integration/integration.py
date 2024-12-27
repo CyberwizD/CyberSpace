@@ -424,7 +424,7 @@ def main(page: ft.Page):
                 time.sleep(2)  # Poll every 2 seconds for updates
 
         except json.JSONDecodeError as e:
-            scan_output_view.controls.clear()
+            # scan_output_view.controls.clear()
             scan_output_view.controls.append(
                 ft.Text(f"Error running active scan: {e}", size=14, selectable=True)
             )
@@ -527,6 +527,10 @@ def main(page: ft.Page):
         )
         page.dialog.open = True  # Open the dialog
         page.update()  # Update the page
+
+        time.sleep(5)
+        page.dialog.open = False
+        page.update()
 
     content_container = ft.Container(
         expand=True,
