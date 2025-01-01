@@ -35,6 +35,9 @@ def save_to_firebase(data):
 def main(page: ft.Page):
     page.title = "Integrations"
 
+    def on_signup_click(e):
+        e.page.go("/signup")
+
     def on_dashboard_click(e):
         e.page.go("/dashboard")
 
@@ -99,6 +102,12 @@ def main(page: ft.Page):
                     title=ft.Text("Reports", color="white"),
                     on_click=lambda e: reports_click(e)
                 ),
+                ft.Divider(height=250, color=ft.colors.TRANSPARENT),
+                ft.ListTile(
+                    leading=ft.Icon(ft.icons.ARROW_BACK_ROUNDED, color="white"),
+                    title=ft.Text("Log Out", color="white"),
+                    on_click=on_signup_click
+                )
             ],
         ),
     )
@@ -127,7 +136,7 @@ def main(page: ft.Page):
             ft.ListTile(
                 leading=ft.Icon(ft.icons.API, color="blue"),
                 title=ft.Text("Nessus"),
-                subtitle=ft.Text("InActive", size=10),
+                subtitle=ft.Text("Inactive", size=10),
                 trailing=ft.TextButton("Configure"),
             ),
             ft.Divider(height=10, color=ft.colors.TRANSPARENT),

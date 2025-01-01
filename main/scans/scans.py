@@ -36,6 +36,9 @@ def save_folder_to_firebase(folder_name):
 def main(page: ft.Page) -> None:
     page.title = "Scans"
 
+    def on_signup_click(e):
+        e.page.go("/signup")
+
     def on_dashboard_click(e):
         e.page.go("/dashboard")
 
@@ -371,6 +374,12 @@ def main(page: ft.Page) -> None:
                     title=ft.Text("Reports", color="white"),
                     on_click=lambda e: reports_click(e)
                 ),
+                ft.Divider(height=250, color=ft.colors.TRANSPARENT),
+                ft.ListTile(
+                    leading=ft.Icon(ft.icons.ARROW_BACK_ROUNDED, color="white"),
+                    title=ft.Text("Log Out", color="white"),
+                    on_click=on_signup_click
+                )
             ],
         ),
     )

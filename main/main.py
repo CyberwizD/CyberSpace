@@ -1,11 +1,29 @@
 import flet as ft
+import threading
+import playsound
 from cover import cover
+from signup import signup
 from login import login
 from dashboard import dashboard
 from targets import targets
 from scans import scans
 from integration import integration
 from reports import reports
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+
+audio = os.getenv("AUDIO")
+
+
+def play_music():
+    # Provide the path to your music file
+    playsound.playsound(audio)
+
+
+music_thread = threading.Thread(target=play_music, daemon=True)
+music_thread.start()
 
 
 def main(page: ft.Page):
@@ -26,6 +44,10 @@ def main(page: ft.Page):
             # Show Cover page
             cover_page = cover.main(page)
             page.views.append(cover_page)
+        elif page.route == "/signup":
+            # Show Signup page
+            signup_page = signup.main(page)
+            page.views.append(signup_page)
         elif page.route == "/login":
             # Show Login page
             login_page = login.main(page)

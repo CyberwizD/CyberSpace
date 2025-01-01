@@ -3,6 +3,7 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
 
 database = os.getenv("database")
@@ -17,6 +18,9 @@ db = firestore.client()
 
 def main(page: ft.Page):
     page.title = "Targets"
+
+    def on_signup_click(e):
+        e.page.go("/signup")
 
     def on_dashboard_click(e):
         e.page.go("/dashboard")
@@ -82,6 +86,12 @@ def main(page: ft.Page):
                     title=ft.Text("Reports", color="white"),
                     on_click=lambda e: reports_click(e)
                 ),
+                ft.Divider(height=250, color=ft.colors.TRANSPARENT),
+                ft.ListTile(
+                    leading=ft.Icon(ft.icons.ARROW_BACK_ROUNDED, color="white"),
+                    title=ft.Text("Log Out", color="white"),
+                    on_click=on_signup_click
+                )
             ],
         ),
     )
@@ -235,7 +245,8 @@ def main(page: ft.Page):
                                     ),
                                     ft.Row(
                                         controls=[
-                                            target_input := ft.TextField(hint_text="Search by url, target name...", width=300),
+                                            target_input := ft.TextField(hint_text="Search by url, target name...",
+                                                                         width=300),
                                             ft.ElevatedButton(
                                                 "Search",
                                                 on_click=view_targets,
@@ -299,4 +310,3 @@ def main(page: ft.Page):
             )
         ]
     )
-    

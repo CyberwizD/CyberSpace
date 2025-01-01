@@ -43,6 +43,9 @@ def main(page: ft.Page):
 
     threading.Thread(target=start_counting, daemon=True).start()
 
+    def on_signup_click(e):
+        e.page.go("/signup")
+
     def on_dashboard_click(e):
         e.page.go("/dashboard")
 
@@ -107,6 +110,12 @@ def main(page: ft.Page):
                     title=ft.Text("Reports", color="white"),
                     on_click=reports_click
                 ),
+                ft.Divider(height=250, color=ft.colors.TRANSPARENT),
+                ft.ListTile(
+                    leading=ft.Icon(ft.icons.ARROW_BACK_ROUNDED, color="white"),
+                    title=ft.Text("Log Out", color="white"),
+                    on_click=on_signup_click
+                )
             ],
         ),
     )
@@ -526,7 +535,7 @@ def main(page: ft.Page):
                                     bgcolor={"": "#7df6dd"},
                                 )
                             ),
-                            button := ft.IconButton(ft.icons.REFRESH, on_click=toggle_data),
+                            ft.IconButton(ft.icons.REFRESH, on_click=toggle_data),
                         ],
                         alignment=ft.MainAxisAlignment.CENTER,
                     ),

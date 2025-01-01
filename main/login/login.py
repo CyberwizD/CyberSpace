@@ -1,10 +1,25 @@
+import time
 import flet as ft
+from flet import Ref, TextField
 import sys
-import os
 from math import pi
 import asyncio
+import firebase_admin
+from firebase_admin import credentials, firestore, auth
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
+Auth = os.getenv("database")
+pic = os.getenv("login_pic")
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Initialize Firebase Admin
+if not firebase_admin._apps:
+    cred = credentials.Certificate(fr"{Auth}")
+    firebase_admin.initialize_app(cred)
+
+db = firestore.client()
 
 
 class AnimatedBox(ft.UserControl):
@@ -23,7 +38,7 @@ class AnimatedBox(ft.UserControl):
             width=48,
             height=48,
             border=ft.border.all(2.5, self.border_color),
-            bgcolor=self.bg_color,
+            bgcolor="#2f2f38",
             border_radius=2,
             rotate=ft.transform.Rotate(self.rotate_angle, ft.alignment.center),
             animate_rotation=ft.animation.Animation(700, "easeInOut"),  # Enable animation
@@ -91,12 +106,14 @@ async def animate_boxes(page):
 
 
 class UserInputField(ft.UserControl):
-    def __init__(self, icon_name, text_hint, hide, function_emails: bool, function_check: bool):
+    def __init__(self, icon_name, text_hint, hide, function_emails: bool, function_check: bool,
+                 input_ref: ft.Ref[ft.TextField] = None):
         self.icon_name = icon_name
         self.text_hint = text_hint
         self.hide = hide
         self.function_emails = function_emails
         self.function_check = function_check
+        self.input_ref = input_ref  # Store the reference
         super().__init__()
 
     # Function to fill in email extension
@@ -127,6 +144,7 @@ class UserInputField(ft.UserControl):
                     content=ft.Text(
                         label_title[index],
                         size=9,
+                        color="white",
                         weight=ft.FontWeight.BOLD,
                     ),
                 )
@@ -213,8 +231,11 @@ class UserInputField(ft.UserControl):
                         opacity=0.85,
                     ),
                     ft.TextField(
+                        ref=self.input_ref,  # Reference the TextField
                         border_color="transparent",
                         bgcolor="transparent",
+                        color=ft.colors.WHITE,
+                        label_style=ft.TextStyle(color="white"),
                         height=20,
                         width=200,
                         text_size=12,
@@ -232,46 +253,177 @@ class UserInputField(ft.UserControl):
             ),
         )
 
+email_ref = Ref[ft.TextField]()  # Reference for the email field
+password_ref = Ref[ft.TextField]()  # Reference for the password field
 
-# Simulate the login page
+
 def main(page: ft.Page):
-    page.horizontal_alignment = "center"
-    page.vertical_alignment = "center"
-    page.title = "Sign In"
-    # page.bgcolor = "#F3F4F6"
+    # Set page alignment and properties
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+    page.title = "Sign Up"
+    # page.bgcolor = "#2f2f38"
+    page.padding = 0
+    page.spacing = 0
 
     def on_sign_in_click(e):
-        # Navigate to dashboard page
-        e.page.go("/dashboard")
+        try:
+            email = email_ref.current.value  # Access email input using the reference
+            password = password_ref.current.value  # Access password input using the reference
+            user = auth.get_user_by_email(email)
+            if user:
+                page.snack_bar = ft.SnackBar(
+                    ft.Column([
+                        ft.Row([
+                            ft.Text(f"Signing In", size=30, color="black"),
+                            ft.ProgressRing(color="black")
+                        ], alignment=ft.MainAxisAlignment.CENTER)
+                    ], alignment=ft.MainAxisAlignment.CENTER),
+                    bgcolor="#7df6dd"
+                )
+                page.snack_bar.open = True
+                page.update()
+                time.sleep(5)
+                e.page.go("/dashboard")
 
-    login_content = ft.Card(
-            width=page.height,
+        except Exception as error:
+            if not email and not password:
+                page.snack_bar = ft.SnackBar(
+                    ft.Column([
+                        ft.Row([
+                            ft.Text("Error: Email and password fields must not be empty!", size=30, color="black"),
+                            ft.ProgressRing(color="black")
+                        ], alignment=ft.MainAxisAlignment.CENTER)
+                    ], alignment=ft.MainAxisAlignment.CENTER),
+                    bgcolor="#7df6dd"
+                )
+                page.snack_bar.open = True
+                page.update()
+
+            else:
+                page.snack_bar = ft.SnackBar(
+                    ft.Column([
+                        ft.Row([
+                            ft.Text(f"Error signing in: {error}", size=30, color="black"),
+                            ft.ProgressRing(color="black")
+                        ], alignment=ft.MainAxisAlignment.CENTER)
+                    ], alignment=ft.MainAxisAlignment.CENTER),
+                    bgcolor="#7df6dd"
+                )
+                page.snack_bar.open = True
+                page.update()
+
+    # Left part of the layout (Image, logo, and minimal text)
+    left_column = ft.Container(
+        content=ft.Stack(
+            [
+                # Background image
+                ft.Image(
+                    src=fr"{pic}",
+                    width=500,
+                    height=550,
+                    fit=ft.ImageFit.COVER,
+                    border_radius=10,
+                ),
+                # Logo at the top-left
+                ft.Column(
+                    controls=[
+                        ft.Row([
+                            ft.Container(
+                                content=ft.Text(
+                                    "CyberSpace",  # Logo text
+                                    size=30,
+                                    color="white",
+                                    opacity=0.5,
+                                    weight=ft.FontWeight.BOLD,
+                                ),
+                                padding=ft.Padding(left=20, top=10, right=0, bottom=0),
+                                alignment=ft.alignment.top_left,
+                            ),
+                            # "Back to website" button at the top-right
+                            ft.Container(
+                                content=ft.ElevatedButton(
+                                    "Get Started",
+                                    on_click=lambda e: e.page.go("/"),
+                                    style=ft.ButtonStyle(
+                                        bgcolor=ft.colors.TRANSPARENT,
+                                        color="white",
+                                        shape=ft.RoundedRectangleBorder(radius=8),
+                                    ),
+                                    opacity=0.5
+                                ),
+                                padding=ft.Padding(right=20, top=20, left=0, bottom=0),
+                                alignment=ft.alignment.top_right,
+                            ),
+                        ],
+                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+                        ),
+                        # Centered text at the bottom
+                        ft.Container(
+                            content=ft.Text(
+                                "Capturing Moments,\nCreating Memories",
+                                color="white",
+                                size=22,
+                                weight=ft.FontWeight.BOLD,
+                                text_align=ft.TextAlign.CENTER,
+                            ),
+                            padding=ft.Padding(bottom=6, top=365, right=0, left=0),
+                            alignment=ft.alignment.bottom_center,
+                        ),
+                        # Pagination dots at the bottom
+                        ft.Container(
+                            content=ft.Row(
+                                [
+                                    ft.Container(width=10, height=3, bgcolor=ft.colors.GREY),
+                                    ft.Container(width=10, height=3, bgcolor="white"),
+                                    ft.Container(width=10, height=3, bgcolor=ft.colors.GREY),
+                                ],
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                spacing=5,
+                            ),
+                            alignment=ft.alignment.bottom_center,
+                            padding=ft.Padding(bottom=10, top=0, right=0, left=0),
+                        ),
+                    ]
+                )
+            ]
+        ),
+        width=500,
+        height=550,
+        padding=10,
+        bgcolor="#17171d",  # Background color matching the original style
+        border_radius=10  # Set border radius for all corners
+    )
+
+    # Right part of the layout (Form section)
+    right_column = ft.Card(
+            width=500,
             height=page.height,
             elevation=20,
-            # color="#F3F4F6",
+            color="#17171d",
             content=ft.Container(
                 border_radius=6,
                 content=ft.Column(
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     controls=[
-                        ft.Divider(height=40, color='transparent'),
-                        ft.Stack(
-                            controls=[
-                                AnimatedBox("#e9665a", None, 0),
-                                AnimatedBox("#7df6dd", "23262a", pi / 4),
-                            ]
-                        ),
                         ft.Divider(height=20, color='transparent'),
                         ft.Column(
                             alignment=ft.MainAxisAlignment.CENTER,
                             spacing=5,
                             controls=[
-                                ft.Text("Sign In", size=22, weight=ft.FontWeight.BOLD),
-                                ft.Text(
-                                    "Web Vulnerability Scanner",
-                                    size=13,
-                                    weight=ft.FontWeight.BOLD,
-                                ),
+                                ft.Row([
+                                    ft.VerticalDivider(width=170, color=ft.colors.TRANSPARENT),
+                                    ft.Text("Sign In", size=35, weight=ft.FontWeight.BOLD, color="white"),
+                                ]),
+                                ft.Row([
+                                    ft.VerticalDivider(width=150, color=ft.colors.TRANSPARENT),
+                                    ft.Text(
+                                        "Web Vulnerability Scanner",
+                                        size=13,
+                                        color="white",
+                                        weight=ft.FontWeight.BOLD,
+                                    ),
+                                ])
                             ],
                         ),
                         ft.Divider(height=20, color='transparent'),
@@ -281,6 +433,7 @@ def main(page: ft.Page):
                             False,
                             True,
                             True,
+                            input_ref=email_ref
                         ),
                         ft.Divider(height=2, color='transparent'),
                         UserInputField(
@@ -289,12 +442,14 @@ def main(page: ft.Page):
                             True,
                             False,
                             True,
+                            input_ref=password_ref
                         ),
                         ft.Divider(height=2, color="transparent"),
                         ft.Row(
                             width=320,
-                            alignment=ft.MainAxisAlignment.END,
+                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                             controls=[
+                                ft.TextButton("Sign up", scale=0.8, on_click=lambda e: e.page.go("/signup")),
                                 ft.TextButton("Forget Password?", scale=0.8),
                             ],
                         ),
@@ -328,20 +483,29 @@ def main(page: ft.Page):
             ),
         )
 
-    # page.add(login_content)
-    # asyncio.run(animate_boxes(page))
+    # Add the left and right columns into a row
+    signup_content = ft.Container(
+        content=ft.Row(
+            controls=[left_column, right_column],
+            alignment=ft.MainAxisAlignment.CENTER,
+        ),
+        border_radius=10,
+        padding=5,
+        width=1000,
+        height=550,
+        bgcolor="#17171d",
+    )
+
+    main_container = ft.Container(
+        content=signup_content,
+        alignment=ft.alignment.bottom_center,  # Center the signup_content within the main container
+        width=5000,
+        height=635,  # Adjust height as needed
+    )
 
     return ft.View(
         "/login",
         controls=[
-            ft.Card(
-                content=ft.Row(
-                    # horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    controls=[
-                        login_content,
-                    ],
-                ),
-            )
+            main_container
         ]
     )
