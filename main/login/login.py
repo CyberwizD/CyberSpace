@@ -261,7 +261,7 @@ def main(page: ft.Page):
     # Set page alignment and properties
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
-    page.title = "Sign Up"
+    page.title = "Sign In"
     # page.bgcolor = "#2f2f38"
     page.padding = 0
     page.spacing = 0
@@ -449,7 +449,7 @@ def main(page: ft.Page):
                             width=320,
                             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                             controls=[
-                                ft.TextButton("Sign up", scale=0.8, on_click=lambda e: e.page.go("/signup")),
+                                ft.TextButton("Create Account", scale=0.8, on_click=lambda e: e.page.go("/signup")),
                                 ft.TextButton("Forget Password?", scale=0.8),
                             ],
                         ),
