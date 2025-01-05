@@ -53,11 +53,27 @@ def main(page: ft.Page):
                 e.page.go("/dashboard")
 
         except Exception as error:
+            internet_error = "HTTPSConnectionPool"
+            error_str = str(error)
+
             if not email and not password:
                 page.snack_bar = ft.SnackBar(
                     ft.Column([
                         ft.Row([
                             ft.Text("Error: Email and password fields must not be empty!", size=30, color="black"),
+                            ft.ProgressRing(color="black")
+                        ], alignment=ft.MainAxisAlignment.CENTER)
+                    ], alignment=ft.MainAxisAlignment.CENTER),
+                    bgcolor="#7df6dd"
+                )
+                page.snack_bar.open = True
+                page.update()
+
+            elif internet_error in error_str:
+                page.snack_bar = ft.SnackBar(
+                    ft.Column([
+                        ft.Row([
+                            ft.Text(f"Error: No Internet Connection!", size=30, color="black"),
                             ft.ProgressRing(color="black")
                         ], alignment=ft.MainAxisAlignment.CENTER)
                     ], alignment=ft.MainAxisAlignment.CENTER),

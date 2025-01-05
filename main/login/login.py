@@ -266,6 +266,8 @@ def main(page: ft.Page):
     page.padding = 0
     page.spacing = 0
 
+
+
     def on_sign_in_click(e):
         try:
             email = email_ref.current.value  # Access email input using the reference
@@ -287,6 +289,9 @@ def main(page: ft.Page):
                 e.page.go("/dashboard")
 
         except Exception as error:
+            internet_error = "HTTPSConnectionPool"
+            error_str = str(error)
+
             if not email and not password:
                 page.snack_bar = ft.SnackBar(
                     ft.Column([
@@ -300,6 +305,19 @@ def main(page: ft.Page):
                 page.snack_bar.open = True
                 page.update()
 
+            elif internet_error in error_str:
+                page.snack_bar = ft.SnackBar(
+                    ft.Column([
+                        ft.Row([
+                            ft.Text(f"Error: No Internet Connection!", size=30, color="black"),
+                            ft.ProgressRing(color="black")
+                        ], alignment=ft.MainAxisAlignment.CENTER)
+                    ], alignment=ft.MainAxisAlignment.CENTER),
+                    bgcolor="#7df6dd"
+                )
+                page.snack_bar.open = True
+                page.update()
+                
             else:
                 page.snack_bar = ft.SnackBar(
                     ft.Column([
@@ -312,6 +330,7 @@ def main(page: ft.Page):
                 )
                 page.snack_bar.open = True
                 page.update()
+            
 
     # Left part of the layout (Image, logo, and minimal text)
     left_column = ft.Container(
@@ -484,7 +503,7 @@ def main(page: ft.Page):
         )
 
     # Add the left and right columns into a row
-    signup_content = ft.Container(
+    signin_content = ft.Container(
         content=ft.Row(
             controls=[left_column, right_column],
             alignment=ft.MainAxisAlignment.CENTER,
@@ -497,7 +516,7 @@ def main(page: ft.Page):
     )
 
     main_container = ft.Container(
-        content=signup_content,
+        content=signin_content,
         alignment=ft.alignment.bottom_center,  # Center the signup_content within the main container
         width=5000,
         height=635,  # Adjust height as needed
