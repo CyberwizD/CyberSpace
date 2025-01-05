@@ -266,8 +266,6 @@ def main(page: ft.Page):
     page.padding = 0
     page.spacing = 0
 
-
-
     def on_sign_in_click(e):
         try:
             email = email_ref.current.value  # Access email input using the reference
