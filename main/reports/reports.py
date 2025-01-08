@@ -385,7 +385,7 @@ def main(page: ft.Page):
                                 width=150,
                                 height=100,
                                 alignment=ft.alignment.center,
-                                on_click=folder1_view,
+                                # on_click=folder1_view,
                                 content=ft.Text("Results 2024\n23 Files", size=16),
                             )
                         ),
@@ -394,7 +394,7 @@ def main(page: ft.Page):
                                 width=150,
                                 height=100,
                                 alignment=ft.alignment.center,
-                                on_click=folder2_view,
+                                # on_click=folder2_view,
                                 content=ft.Text("Market Analysis\n8 Files", size=16),
                             )
                         ),
@@ -403,7 +403,7 @@ def main(page: ft.Page):
                                 width=150,
                                 height=100,
                                 alignment=ft.alignment.center,
-                                on_click=folder3_view,
+                                # on_click=folder3_view,
                                 content=ft.Text("All Contracts\n37 Files", size=16),
                             )
                         ),

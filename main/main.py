@@ -1,6 +1,4 @@
 import flet as ft
-import threading
-import playsound
 from cover import cover
 from signup import signup
 from login import login
@@ -9,21 +7,6 @@ from targets import targets
 from scans import scans
 from integration import integration
 from reports import reports
-import os
-from dotenv import load_dotenv
-load_dotenv()
-
-
-audio = os.getenv("AUDIO")
-
-
-def play_music():
-    # Provide the path to your music file
-    playsound.playsound(audio)
-
-
-music_thread = threading.Thread(target=play_music, daemon=True)
-music_thread.start()
 
 
 def main(page: ft.Page):

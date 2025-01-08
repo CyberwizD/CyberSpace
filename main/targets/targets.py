@@ -138,6 +138,7 @@ def main(page: ft.Page):
                                     controls=[
                                         ft.Text("Targets Overview", size=18, weight=ft.FontWeight.BOLD, color="white"),
                                         ft.Text("Details about your targets will be displayed here.", color="white"),
+                                        ft.Divider(height=5, color=ft.colors.TRANSPARENT),
                                         ft.Text("No targets found for the entered URL.", color="white")
                                     ]
                                 )
@@ -159,6 +160,7 @@ def main(page: ft.Page):
                                 controls=[
                                     ft.Text("Targets Overview", size=18, weight=ft.FontWeight.BOLD, color="white"),
                                     ft.Text("Details about your targets will be displayed here.", color="white"),
+                                    ft.Divider(height=5, color=ft.colors.TRANSPARENT),
                                     ft.Text("Please enter a URL to search.", color="white")
                                 ]
                             )
